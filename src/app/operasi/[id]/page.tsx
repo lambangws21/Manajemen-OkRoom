@@ -2,11 +2,16 @@ import { notFound } from "next/navigation";
 import { mockScheduledSurgeries } from "@/lib/mock-data";
 import OperasiDetailClient from "@/components/operasi/OperasiDetailClient";
 
-// Next.js 15 App Router: params selalu sync, bukan Promise
-export default async function OperasiDetailPage(
-  props: { params: { id: string } }
-) {
-  const { id } = props.params;
+// ❌ Jangan pakai PageProps dari next
+// ✅ Tulis manual
+type OperasiPageProps = {
+  params: {
+    id: string;
+  };
+};
+
+export default async function OperasiDetailPage({ params }: OperasiPageProps) {
+  const { id } = params;
 
   const surgery = mockScheduledSurgeries.find((s) => s.id === id);
 
