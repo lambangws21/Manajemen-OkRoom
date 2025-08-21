@@ -2,21 +2,19 @@
 import useSWR from 'swr';
 import StatusCard from './StatusCard';
 import Spinner from '@/components/ui/Spinner';
-import { mockSurgeryBoard } from '@/lib/mock-data'; // Impor data dummy
+import { mockSurgeryBoard } from '@/lib/mock-data';
 import { OngoingSurgery } from '@/types';
 
-// Fungsi 'fetcher' untuk SWR.
-// Di dunia nyata, ini akan memanggil API Anda.
-// Untuk sekarang, kita kembalikan data dummy dengan sedikit delay.
-const fetcher = (url: string): Promise<OngoingSurgery[]> => 
+// The 'url' parameter is removed here as it is not used
+const fetcher = (): Promise<OngoingSurgery[]> => 
   new Promise(resolve => setTimeout(() => resolve(mockSurgeryBoard), 1000));
 
 export default function SurgeryStatusBoard() {
-  // Gunakan SWR untuk mengambil data dan refresh otomatis setiap 30 detik
+  // Since the fetcher doesn't use the URL, the key can be simplified
   const { data: surgeryList, error, isLoading } = useSWR(
-    '/api/surgery-status', // Kunci API unik
+    'surgery-status-key', // A simple, unique key
     fetcher,
-    { refreshInterval: 30000 } // Refresh setiap 30 detik (30000 ms)
+    { refreshInterval: 30000 }
   );
 
   if (isLoading) {
@@ -32,7 +30,6 @@ export default function SurgeryStatusBoard() {
   }
 
   return (
-    // Grid untuk menampilkan beberapa status sekaligus
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
       {surgeryList.map((surgery) => (
         <StatusCard key={surgery.caseId} data={surgery} />
