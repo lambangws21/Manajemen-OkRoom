@@ -1,21 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ScheduledSurgery, SurgeryLog } from '@/types';
-import PatientWorkflowTracker from '@/components/operasi/PatientWorkflowTracker';
-import Card from '@/components/ui/Card';
-import { mockScheduledSurgeries } from '@/lib/mock-data';
+import { useState } from "react";
+import { ScheduledSurgery, SurgeryLog } from "@/types";
+import PatientWorkflowTracker from "@/components/operasi/PatientWorkflowTracker";
+import Card from "@/components/ui/Card";
+import { mockScheduledSurgeries } from "@/lib/mock-data";
 
-// This component receives the initial data as a prop
 interface OperasiDetailClientProps {
   initialSurgery: ScheduledSurgery;
 }
 
 export default function OperasiDetailClient({ initialSurgery }: OperasiDetailClientProps) {
-  // State to manage the surgery data, which can change
-  const [surgery, setSurgery] = useState<ScheduledSurgery>(initialSurgery);
+  const [surgery, setSurgery] = useState(initialSurgery);
 
-  // Handler to update the status
   const handleUpdate = (
     id: string,
     newStatus: ScheduledSurgery["status"],
@@ -26,12 +23,13 @@ export default function OperasiDetailClient({ initialSurgery }: OperasiDetailCli
     const updatedSurgery = {
       ...surgery,
       status: newStatus,
-      surgeryLog: log || surgery.surgeryLog,
+      surgeryLog: log ?? surgery.surgeryLog,
     };
+
     setSurgery(updatedSurgery);
 
-    // In a real app, you would also update the mock data "database" here
-    const patientInDb = mockScheduledSurgeries.find(p => p.id === id);
+    // mock DB update
+    const patientInDb = mockScheduledSurgeries.find((p) => p.id === id);
     if (patientInDb) {
       patientInDb.status = newStatus;
       if (log) patientInDb.surgeryLog = log;

@@ -1,21 +1,18 @@
+import { notFound } from "next/navigation";
 import { mockScheduledSurgeries } from "@/lib/mock-data";
 import OperasiDetailClient from "@/components/operasi/OperasiDetailClient";
-import { notFound } from "next/navigation";
 
-// Ini adalah Server Component (tidak ada 'use client')
-export default async function OperasiDetailPage({ params }: { params: { id: string } }) {
-  // 1. Ambil data di server
-  const findSurgery = (id: string) => {
-    return mockScheduledSurgeries.find((s) => s.id === id);
-  };
+// Next.js 15 App Router: params selalu sync, bukan Promise
+export default async function OperasiDetailPage(
+  props: { params: { id: string } }
+) {
+  const { id } = props.params;
 
-  const surgery = findSurgery(params.id);
+  const surgery = mockScheduledSurgeries.find((s) => s.id === id);
 
-  // 2. Jika data tidak ditemukan, tampilkan halaman 404
   if (!surgery) {
     notFound();
   }
 
-  // 3. Render komponen klien dan berikan data yang sudah siap
   return <OperasiDetailClient initialSurgery={surgery} />;
 }
