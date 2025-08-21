@@ -4,17 +4,18 @@ import { useState } from 'react';
 import { ScheduledSurgery, SurgeryLog } from '@/types';
 import PatientWorkflowTracker from '@/components/operasi/PatientWorkflowTracker';
 import Card from '@/components/ui/Card';
+import { mockScheduledSurgeries } from '@/lib/mock-data';
 
-// Komponen ini menerima data awal sebagai prop
+// This component receives the initial data as a prop
 interface OperasiDetailClientProps {
   initialSurgery: ScheduledSurgery;
 }
 
 export default function OperasiDetailClient({ initialSurgery }: OperasiDetailClientProps) {
-  // State untuk mengelola data operasi yang bisa berubah
+  // State to manage the surgery data, which can change
   const [surgery, setSurgery] = useState<ScheduledSurgery>(initialSurgery);
 
-  // Handler untuk memperbarui status
+  // Handler to update the status
   const handleUpdate = (
     id: string,
     newStatus: ScheduledSurgery["status"],
@@ -28,6 +29,13 @@ export default function OperasiDetailClient({ initialSurgery }: OperasiDetailCli
       surgeryLog: log || surgery.surgeryLog,
     };
     setSurgery(updatedSurgery);
+
+    // In a real app, you would also update the mock data "database" here
+    const patientInDb = mockScheduledSurgeries.find(p => p.id === id);
+    if (patientInDb) {
+      patientInDb.status = newStatus;
+      if (log) patientInDb.surgeryLog = log;
+    }
 
     console.log("Updated Surgery Data:", updatedSurgery);
     alert(`Status pasien diperbarui menjadi: ${newStatus}`);
