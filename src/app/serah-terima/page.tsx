@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { mockScheduledSurgeries, mockSurgeryBoard } from '@/lib/mock-data'; // Impor yang relevan saja
+import { mockScheduledSurgeries, mockStaffMembers, mockSurgeryBoard } from '@/lib/mock-data'; // Impor yang relevan saja
 import { ScheduledSurgery, StaffMember, OngoingSurgery } from '@/types';
 import PatientHandoverModal from '@/components/operasi/PatientHandOverModal';
 import { Check, ChevronsRight, PlayCircle } from 'lucide-react'; // Ganti Files dengan PlayCircle
@@ -71,7 +71,10 @@ export default function SerahTerimaPage() {
       operatingRoom: selectedPatient.assignedOR || 'OK Antrian',
       status: 'Persiapan Operasi',
       startTime: new Date().toISOString(),
-      team: { nurses: selectedPatient.assignedTeam?.nurses || [] },
+      team: { 
+        anesthesiologist: selectedPatient.assignedTeam?.anesthesiologist || mockStaffMembers[0],
+        nurses: selectedPatient.assignedTeam?.nurses || [] 
+      },
     };
     
     const boardWithoutPatient = mockSurgeryBoard.filter(p => p.id !== selectedPatient.id);

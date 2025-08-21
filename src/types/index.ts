@@ -65,13 +65,27 @@ export interface ScheduledSurgery extends BaseSurgery {
   };
   surgeryLog?: SurgeryLog;
 }
+// ... (interface lainnya)
 
 export interface OngoingSurgery extends BaseSurgery {
   caseId: string;
   operatingRoom: string;
   startTime: string;
   status: 'Persiapan Operasi' | 'Operasi Berlangsung' | 'Ruang Pemulihan';
+  // DIUBAH: Tambahkan dokter anestesi ke dalam tim
   team: {
+    anesthesiologist: StaffMember;
     nurses: StaffMember[];
   };
 }
+
+
+// export interface OngoingSurgery extends BaseSurgery {
+//   caseId: string;
+//   operatingRoom: string;
+//   startTime: string;
+//   status: 'Persiapan Operasi' | 'Operasi Berlangsung' | 'Ruang Pemulihan';
+//   team: {
+//     nurses: StaffMember[];
+//   };
+// }

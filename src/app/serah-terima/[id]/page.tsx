@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { mockScheduledSurgeries, mockSurgeryBoard } from '@/lib/mock-data';
+import { mockScheduledSurgeries, mockSurgeryBoard, mockStaffMembers } from '@/lib/mock-data';
 import { ScheduledSurgery, OngoingSurgery } from '@/types';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -26,13 +26,13 @@ export default function SerahTerimaDetailPage({ params }: { params: { id: string
       return;
     }
     
-    // 1. Update status di "database" mock
     const patientInDb = mockScheduledSurgeries.find(p => p.id === surgery.id);
     if (patientInDb) {
       patientInDb.status = 'Pasien Diterima';
     }
 
-    // 2. Tambahkan/update ke Live View Board
+    // **FIX IS HERE**
+    // Ensure the anesthesiologist is included in the team object.
     const liveEntry: OngoingSurgery = {
       id: surgery.id,
       procedure: surgery.procedure,
@@ -41,7 +41,11 @@ export default function SerahTerimaDetailPage({ params }: { params: { id: string
       operatingRoom: surgery.assignedOR || 'OK Antrian',
       status: 'Persiapan Operasi',
       startTime: new Date().toISOString(),
-      team: { nurses: surgery.assignedTeam?.nurses || [] },
+      team: { 
+        // Provide both anesthesiologist and nurses
+        anesthesiologist: surgery.assignedTeam?.anesthesiologist || mockStaffMembers[0], // Fallback to first anesthesiologist
+        nurses: surgery.assignedTeam?.nurses || [] 
+      },
     };
 
     const boardWithoutPatient = mockSurgeryBoard.filter(p => p.id !== surgery.id);
@@ -50,7 +54,6 @@ export default function SerahTerimaDetailPage({ params }: { params: { id: string
     
     alert(`Serah terima untuk pasien ${surgery.patientName} berhasil dicatat.`);
     
-    // 3. Arahkan kembali ke Papan Kendali setelah selesai
     router.push('/papan-kendali');
   };
 

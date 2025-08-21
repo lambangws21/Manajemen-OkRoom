@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ScheduledSurgery, StaffMember } from '@/types';
 import Button from '@/components/ui/Button';
-import { X, ArrowRightLeft, CheckCircle2 } from 'lucide-react';
+import Input from '@/components/ui/Input'; // <-- Impor Input
+import { X, ArrowRightLeft, CheckCircle2, Search } from 'lucide-react';
 import { mockStaffMembers } from '@/lib/mock-data';
 
 interface PatientHandoverModalProps {
@@ -14,20 +15,27 @@ interface PatientHandoverModalProps {
 
 export default function PatientHandoverModal({ surgery, onClose, onSubmit }: PatientHandoverModalProps) {
   const [notes, setNotes] = useState<string>('');
-  
-  // SOLUSI: Kita akan gunakan state ini untuk menyimpan tim penerima yang dipilih
   const [selectedReceiverIds, setSelectedReceiverIds] = useState<Set<string>>(new Set());
+  const [searchTerm, setSearchTerm] = useState(''); // <-- State untuk search
 
-  // Ambil daftar perawat dari mock data sebagai tim penerima potensial
   const potentialReceivers = mockStaffMembers.filter(s => s.role.includes('Perawat'));
   
+  // Filter daftar perawat berdasarkan searchTerm
+  const filteredReceivers = useMemo(() => {
+    if (!searchTerm) {
+      return potentialReceivers;
+    }
+    return potentialReceivers.filter(staff =>
+      staff.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, potentialReceivers]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!notes.trim()) {
       alert('Catatan serah terima tidak boleh kosong.');
       return;
     }
-    // Cari objek StaffMember lengkap berdasarkan ID yang dipilih
     const receivingTeam = potentialReceivers.filter(staff => selectedReceiverIds.has(staff.id));
     onSubmit(notes, receivingTeam);
   };
@@ -81,11 +89,22 @@ export default function PatientHandoverModal({ surgery, onClose, onSubmit }: Pat
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Diserahkan Kepada Tim Perawat (Pilih 1 atau lebih)
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Diserahkan Kepada Tim Perawat
               </label>
-              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-2">
-                {potentialReceivers.map(staff => (
+              {/* Search Input */}
+              <div className="relative mb-2">
+                <Input 
+                  placeholder="Cari nama perawat..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Search size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              </div>
+              
+              {/* Daftar Perawat */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-2">
+                {filteredReceivers.length > 0 ? filteredReceivers.map(staff => (
                   <div 
                     key={staff.id} 
                     onClick={() => handleSelectReceiver(staff.id)}
@@ -96,12 +115,14 @@ export default function PatientHandoverModal({ surgery, onClose, onSubmit }: Pat
                     }`}
                   >
                     <div>
-                      <p className="font-semibold text-sm">{staff.name}</p>
+                      <p className="font-semibold text-sm text-slate-700">{staff.name}</p>
                       <p className="text-xs text-gray-500">{staff.role}</p>
                     </div>
                     {selectedReceiverIds.has(staff.id) && <CheckCircle2 size={18} className="text-blue-600" />}
                   </div>
-                ))}
+                )) : (
+                  <p className="text-sm text-gray-400 col-span-2 text-center py-4">Nama tidak ditemukan.</p>
+                )}
               </div>
             </div>
           </div>

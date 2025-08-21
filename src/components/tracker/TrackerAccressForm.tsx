@@ -39,19 +39,19 @@ export default function TrackerAccessForm() {
       <form onSubmit={handleSubmit} className="p-4">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Lacak Status Pasien</h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-200 mt-2">
             Masukkan ID Operasi pasien untuk melihat progres.
           </p>
         </div>
         
         <div className="space-y-4">
-          <div>
+          <div className='dark:text-gray-200'>
             <label htmlFor="access-code" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               ID Operasi
             </label>
             <Input
               id="access-code"
-              placeholder="Contoh: op-001" // <-- DIUBAH
+              placeholder="Contoh: op-001"
               value={accessCode}
               onChange={handleChange}
             />

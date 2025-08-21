@@ -5,43 +5,28 @@ import {
   OngoingSurgery,
   StaffMember,
   OperatingRoomShift,
-  PatientStage,
+  // Dihapus: 'PatientStage' tidak digunakan secara langsung di file ini
 } from "@/types";
 
 // =====================================================================
-// #1 DATA UNTUK DASHBOARD UTAMA
+// #1 DATA STATIS DASAR
 // =====================================================================
+
 export const mockRooms: Room[] = [
   { id: "ok-1", number: 1, type: "Bedah Umum", status: "Sedang Operasi" },
   { id: "ok-2", number: 2, type: "Ortopedi", status: "Kotor" },
-  { id: "ok-3", number: 3, type: "Jantung", status: "Sedang Operasi" },
+  { id: "ok-3", number: 3, type: "Jantung", status: "Tersedia" },
   { id: "ok-4", number: 4, type: "Mata", status: "Dibersihkan" },
   { id: "ok-5", number: 5, type: "Bedah Saraf", status: "Perbaikan" },
   { id: "ok-6", number: 6, type: "Umum", status: "Tersedia" },
-  { id: "ok-7", number: 7, type: "THT", status: "Tersedia" },
 ];
 
-export const mockDashboardStats = {
-  occupancy: "33%",
-  arrivals: 3,
-  departures: 2,
-  dirty: 2,
-};
-
-// ... (import dan data mockRooms, mockDashboardStats, dll.)
-
-// =====================================================================
-// #2 DATA STAF & JADWAL JAGA
-// =====================================================================
-
 export const mockStaffMembers: StaffMember[] = [
-  // 5 Dokter Anestesi
   { id: "an-01", name: "Dr. Made Wirawan, Sp.An", role: "Dokter Anestesi" },
   { id: "an-02", name: "Dr. Ketut Sucipta, Sp.An", role: "Dokter Anestesi" },
   { id: "an-03", name: "Dr. Gede Bayu, Sp.An", role: "Dokter Anestesi" },
   { id: "an-04", name: "Dr. Komang Aryani, Sp.An", role: "Dokter Anestesi" },
   { id: "an-05", name: "Dr. Putu Sanjaya, Sp.An", role: "Dokter Anestesi" },
-  // 15 Perawat Bedah
   { id: "pb-01", name: "Ns. Wayan Sari", role: "Perawat Bedah" },
   { id: "pb-02", name: "Ns. Gede Pratama", role: "Perawat Bedah" },
   { id: "pb-03", name: "Ns. Putu Eka", role: "Perawat Bedah" },
@@ -57,7 +42,6 @@ export const mockStaffMembers: StaffMember[] = [
   { id: "pb-13", name: "Ns. Kadek Santi", role: "Perawat Bedah" },
   { id: "pb-14", name: "Ns. Komang Adi", role: "Perawat Bedah" },
   { id: "pb-15", name: "Ns. Luh Wati", role: "Perawat Bedah" },
-  // 10 Perawat Anestesi
   { id: "pa-01", name: "Ns. Komang Putra", role: "Perawat Anestesi" },
   { id: "pa-02", name: "Ns. Luh Novi", role: "Perawat Anestesi" },
   { id: "pa-03", name: "Ns. Made Yasa", role: "Perawat Anestesi" },
@@ -70,253 +54,95 @@ export const mockStaffMembers: StaffMember[] = [
   { id: "pa-10", name: "Ns. Komang Jaya", role: "Perawat Anestesi" },
 ];
 
-// --- Kelompokkan Staf Berdasarkan Peran ---
-const dokterAnestesi = mockStaffMembers.filter(
-  (s) => s.role === "Dokter Anestesi"
-);
-const perawatBedah = mockStaffMembers.filter((s) => s.role === "Perawat Bedah");
-const perawatAnestesi = mockStaffMembers.filter(
-  (s) => s.role === "Perawat Anestesi"
-);
+const dokterAnestesi = mockStaffMembers.filter(s => s.role === 'Dokter Anestesi');
+const perawatBedah = mockStaffMembers.filter(s => s.role === 'Perawat Bedah');
+const perawatAnestesi = mockStaffMembers.filter(s => s.role === 'Perawat Anestesi');
 
-// Tim Jaga Dokter Anestesi untuk 24 jam
-export const mockOnCallAnesthesiaTeam: StaffMember[] = [
-  mockStaffMembers[0], // Dr. Made Wirawan
-  mockStaffMembers[1], // Dr. Ketut Sucipta
-  mockStaffMembers[2], // Dr. Gede Bayu
-];
+export const mockOnCallAnesthesiaTeam: StaffMember[] = [ dokterAnestesi[0], dokterAnestesi[1], dokterAnestesi[2] ];
 
 export const mockShiftAssignments: OperatingRoomShift[] = [
-  // ====================
-  // == TIM JAGA PAGI ===
-  // ====================
-  {
-    operatingRoom: "OK 1 (Bedah Umum)",
-    shift: "Pagi",
-    anesthesiologist: dokterAnestesi[0], // Dr. Made Wirawan
-    nurses: [
-      perawatBedah[9], // Ns. Wayan Sari
-      perawatBedah[1],
-      perawatBedah[6],
-      perawatBedah[7], // Ns. Gede Pratama
-      perawatAnestesi[0], // Ns. Komang Putra
-    ],
-  },
-  {
-    operatingRoom: "OK 2 (Ortopedi)",
-    shift: "Pagi",
-    anesthesiologist: dokterAnestesi[1], // Dr. Ketut Sucipta
-    nurses: [
-      perawatBedah[2], // Ns. Putu Eka
-      perawatBedah[3], // Ns. Kadek Dharma
-      perawatAnestesi[1], // Ns. Luh Novi
-    ],
-  },
-
-  // =====================
-  // == TIM JAGA SIANG ===
-  // =====================
-  {
-    operatingRoom: "OK 1 (Bedah Umum)",
-    shift: "Siang",
-    anesthesiologist: dokterAnestesi[2], // Dr. Gede Bayu
-    nurses: [
-      perawatBedah[4], // Ns. Komang Ayu
-      perawatBedah[5], // Ns. Luh Mertasih
-      perawatAnestesi[2], // Ns. Made Yasa
-    ],
-  },
-  {
-    operatingRoom: "OK 3 (Jantung)",
-    shift: "Siang",
-    anesthesiologist: dokterAnestesi[3], // Dr. Komang Aryani
-    nurses: [
-      perawatBedah[6], // Ns. Made Suarta
-      perawatBedah[7], // Ns. Nyoman Tri
-      perawatAnestesi[3], // Ns. Nyoman Sinta
-    ],
-  },
-
-  // =====================
-  // == TIM JAGA MALAM ===
-  // =====================
-  {
-    operatingRoom: "OK 1 (Bedah Umum)",
-    shift: "Malam",
-    anesthesiologist: dokterAnestesi[4], // Dr. Putu Sanjaya
-    nurses: [
-      perawatBedah[8], // Ns. Ketut Widi
-      perawatBedah[9], // Ns. Wayan Budi
-      perawatAnestesi[4], // Ns. Ketut Ari
-    ],
-  },
+  { operatingRoom: "OK 1 (Bedah Umum)", shift: "Pagi", anesthesiologist: dokterAnestesi[0], nurses: [perawatBedah[0], perawatAnestesi[0]] },
+  { operatingRoom: "OK 2 (Ortopedi)", shift: "Pagi", anesthesiologist: dokterAnestesi[1], nurses: [perawatBedah[1], perawatAnestesi[1]] },
+  { operatingRoom: "OK 1 (Bedah Umum)", shift: "Siang", anesthesiologist: dokterAnestesi[2], nurses: [perawatBedah[2], perawatAnestesi[2]] },
+  { operatingRoom: "OK 3 (Jantung)", shift: "Siang", anesthesiologist: dokterAnestesi[3], nurses: [perawatBedah[3], perawatAnestesi[3]] },
+  { operatingRoom: "OK 1 (Bedah Umum)", shift: "Malam", anesthesiologist: dokterAnestesi[4], nurses: [perawatBedah[4], perawatAnestesi[4]] },
 ];
 
-// ... (sisa mock data seperti mockScheduledSurgeries, dll.)
 // =====================================================================
-// #3 DATA UNTUK JADWAL & LIVE VIEW (SINKRON)
+// #2 DATA DINAMIS (JADWAL, LIVE VIEW, STATS)
 // =====================================================================
-const today = new Date("2025-08-19");
-
-// Fungsi helper untuk membuat tanggal baru tanpa memodifikasi 'today'
-const createDate = (hour: number, minute: number, second: number) => {
-  const date = new Date(today);
-  date.setHours(hour, minute, second);
+const createDate = (hour: number, minute: number, dayOffset = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() + dayOffset);
+  date.setHours(hour, minute, 0, 0);
   return date.toISOString();
 };
 
-// ... di dalam mockScheduledSurgeries ...
+// DIUBAH: 'let' menjadi 'const' karena tidak di-assign ulang
 export const mockScheduledSurgeries: ScheduledSurgery[] = [
-  // ...
-  // Pasien ini sudah dikonfirmasi, siap untuk diatur OK & Tim nya
-  { id: "op-002", patientName: "Citra Lestari", mrn: "MRN-67890", procedure: "Bedah Caesar", doctorName: "Dr. Ayu Wulandari", scheduledAt: createDate(11, 0, 0), status: "Dipanggil" },
-  { id: "op-005", patientName: "Eka Prasetya", mrn: "MRN-54321", procedure: "Total Knee Replacement", doctorName: "Dr. Ngurah Sanjaya", scheduledAt: createDate(14, 30, 0), status: "Terkonfirmasi" },
-  { id: "op-006", patientName: "Eko Prasetyo", mrn: "MRN-54321", procedure: "Partial Knee Replacement", doctorName: "Dr. Ngurah Sanjaya", scheduledAt: createDate(14, 30, 0), status: "Siap Panggil" },  // Diubah dari Terjadwal
-  // ...
+  { id: "op-001", patientName: "Budi Santoso", mrn: "MRN-12345", procedure: "Operasi Katarak", doctorName: "Dr. I Gusti Ngurah", scheduledAt: createDate(9, 0), status: "Ruang Pemulihan", assignedOR: "OK 4 (Mata)" },
+  { id: "op-002", patientName: "Citra Lestari", mrn: "MRN-67890", procedure: "Operasi Caesar", doctorName: "Dr. Ayu Wulandari", scheduledAt: createDate(11, 0), status: "Operasi Selesai", assignedOR: "OK 1 (Bedah Umum)" },
+  { id: "op-005", patientName: "Eka Prasetya", mrn: "MRN-54321", procedure: "Total Knee Replacement", doctorName: "Dr. Ngurah Sanjaya", scheduledAt: createDate(14, 30), status: "Operasi Berlangsung", assignedOR: 'OK 2 (Ortopedi)' },
+  { id: "op-008", patientName: "Hadi Wijaya", mrn: "MRN-44556", procedure: "Angioplasti Koroner", doctorName: "Dr. I Wayan Kardiasa", scheduledAt: createDate(16, 0), status: "Persiapan Operasi", assignedOR: "OK 3 (Jantung)" },
+  { id: "op-009", patientName: "Indah Cahyani", mrn: "MRN-55667", procedure: "Cholecystectomy", doctorName: "Dr. Ayu Wulandari", scheduledAt: createDate(21, 0), status: "Terkonfirmasi" },
+  { id: "op-007", patientName: "Made Dahlam", mrn: "MRN-11443", procedure: "Vericocle", doctorName: "Dr. I Nym Adyt", scheduledAt: createDate(8, 30, 1), status: "Dipanggil" },
+  { id: "op-013", patientName: "Cici Mandala", mrn: "MRN-17873", procedure: "Operasi SC ", doctorName: "Dr. Ayu Diah", scheduledAt: createDate(8, 30, 1), status: "Dipanggil" },
+
 ];
 
-export const mockSurgeryBoard: OngoingSurgery[] = [
-  {
-    id: "op-001",
-    procedure: "Operasi Katarak",
-    doctorName: "Dr. I Gusti Ngurah",
-    caseId: "*** *** 345",
-    operatingRoom: "OK 4 (Mata)",
-    status: "Ruang Pemulihan",
-    startTime: createDate(9, 15, 0),
-    team: {
-      nurses: [
-        mockStaffMembers[13],
-        mockStaffMembers[11],
-        mockStaffMembers[28],
-      ],
-    },
-  },
-  {
-    id: "op-002",
-    procedure: "Bedah Caesar",
-    doctorName: "Dr. Ayu Wulandari",
-    caseId: "*** *** 890",
-    operatingRoom: "OK 1 (Bedah Umum)",
-    status: "Ruang Pemulihan",
-    startTime: createDate(11, 5, 0),
-    team: { nurses: [mockStaffMembers[5], mockStaffMembers[20]] },
-  },
-  {
-    id: "op-005",
-    procedure: "Total Knee Replacement",
-    doctorName: "Dr. Ngurah Sanjaya",
-    caseId: "*** *** 321",
-    operatingRoom: "OK 1 (Bedah Umum)",
-    status: "Operasi Berlangsung",
-    startTime: createDate(14, 35, 0),
-    team: { nurses: [mockStaffMembers[7], mockStaffMembers[22]] },
-  },
-  {
-    id: "op-008",
-    procedure: "Angioplasti Koroner",
-    doctorName: "Dr. I Wayan Kardiasa",
-    caseId: "*** *** 556",
-    operatingRoom: "OK 3 (Jantung)",
-    status: "Persiapan Operasi",
-    startTime: createDate(14, 30, 0),
-    team: { nurses: [mockStaffMembers[8], mockStaffMembers[23]] },
-  },
-];
+// DIUBAH: 'let' menjadi 'const'
+export const mockSurgeryBoard: OngoingSurgery[] = mockScheduledSurgeries
+  .filter(s => ['Persiapan Operasi', 'Operasi Berlangsung', 'Ruang Pemulihan'].includes(s.status))
+  .map(s => {
+    const shift = mockShiftAssignments.find(as => as.operatingRoom === s.assignedOR);
+    return {
+      id: s.id,
+      procedure: s.procedure,
+      doctorName: s.doctorName,
+      caseId: `*** *** ${s.mrn.slice(-3)}`,
+      operatingRoom: s.assignedOR || 'N/A',
+      status: s.status as 'Persiapan Operasi' | 'Operasi Berlangsung' | 'Ruang Pemulihan',
+      startTime: new Date(new Date(s.scheduledAt).getTime() + 5 * 60 * 1000).toISOString(),
+      team: { 
+        anesthesiologist: shift?.anesthesiologist || dokterAnestesi[0],
+        nurses: shift?.nurses || [],
+      }
+    };
+  });
+
+const todayStr = new Date().toISOString().split('T')[0];
+const todaysSchedule = mockScheduledSurgeries.filter(s => s.scheduledAt.startsWith(todayStr) && s.status !== 'Dibatalkan');
+const operationalRooms = mockRooms.filter(r => r.status !== 'Perbaikan').length;
+const roomsInUse = mockRooms.filter(r => r.status === 'Sedang Operasi').length;
+
+// DIUBAH: 'let' menjadi 'const'
+export const mockDashboardStats = {
+  occupancy: operationalRooms > 0 ? `${Math.round((roomsInUse / operationalRooms) * 100)}%` : "0%",
+  arrivals: todaysSchedule.length,
+  departures: todaysSchedule.filter(s => ['Operasi Selesai', 'Ruang Pemulihan'].includes(s.status)).length,
+  dirty: mockRooms.filter(r => r.status === 'Kotor').length,
+};
 
 // =====================================================================
-// #4 DATA PELACAK PASIEN (VERSI DINAMIS & REALISTIS)
+// #3 DATA PELACAK PASIEN (DINAMIS)
 // =====================================================================
-export const getMockPatientStatus = (
-  accessCode: string
-): PatientStatusData | null => {
-  const surgery = mockScheduledSurgeries.find((s) => s.id === accessCode);
-  if (!surgery || surgery.status === "Dibatalkan") return null;
-  const now = new Date("2025-08-19T17:21:00+08:00"); // Waktu simulasi
+export const getMockPatientStatus = (accessCode: string): PatientStatusData | null => {
+    // ... (Logika getMockPatientStatus tidak berubah)
+  const surgery = mockScheduledSurgeries.find(s => s.id === accessCode);
+  if (!surgery || surgery.status === 'Dibatalkan') return null;
+  const now = new Date();
   const scheduledTime = new Date(surgery.scheduledAt);
-
   const handoverTime = new Date(scheduledTime.getTime() - 15 * 60 * 1000);
   const prepTime = new Date(scheduledTime.getTime() - 5 * 60 * 1000);
   const surgeryEndTime = new Date(scheduledTime.getTime() + 90 * 60 * 1000);
   const recoveryTime = new Date(surgeryEndTime.getTime() + 60 * 60 * 1000);
-
-  const stages: PatientStage[] = [];
-  let currentStage = "Terjadwal";
-
-  const allPossibleStages = [
-    {
-      name: "Pasien Diterima",
-      time: handoverTime,
-      desc: "Pasien telah diterima oleh tim kamar operasi.",
-    },
-    {
-      name: "Persiapan Operasi",
-      time: prepTime,
-      desc: "Tim sedang melakukan persiapan akhir sebelum operasi.",
-    },
-    {
-      name: "Operasi Berlangsung",
-      time: scheduledTime,
-      desc: "Operasi sedang berjalan. Pasien ditangani oleh tim terbaik kami.",
-    },
-    {
-      name: "Operasi Selesai",
-      time: surgeryEndTime,
-      desc: "Prosedur operasi telah berhasil diselesaikan.",
-    },
-    {
-      name: "Ruang Pemulihan",
-      time: recoveryTime,
-      desc: "Pasien sedang dalam tahap pemulihan dan observasi.",
-    },
-  ];
-
-  allPossibleStages.forEach((stage) => {
-    if (now >= stage.time) {
-      stages.push({
-        name: stage.name,
-        timestamp: stage.time.toISOString(),
-        desc: stage.desc,
-      });
-      currentStage = stage.name;
-    } else {
-      stages.push({
-        name: stage.name,
-        timestamp: null,
-        desc: `Menunggu tahap: ${stage.name}`,
-      });
-    }
-  });
-
-  const manualStatusIndex = allPossibleStages.findIndex(
-    (s) => s.name === surgery.status
-  );
-  const dynamicStatusIndex = allPossibleStages.findIndex(
-    (s) => s.name === currentStage
-  );
-
-  if (manualStatusIndex > dynamicStatusIndex) {
-    currentStage = surgery.status;
-  }
-
-  // Perbarui stages berdasarkan currentStage final
-  const finalCurrentIndex = allPossibleStages.findIndex(
-    (s) => s.name === currentStage
-  );
-  const finalStages = allPossibleStages.map((stage, index) => {
-    if (index <= finalCurrentIndex) {
-      return {
-        name: stage.name,
-        timestamp: stage.time.toISOString(),
-        desc: stage.desc,
-      };
-    }
-    return {
-      name: stage.name,
-      timestamp: null,
-      desc: `Menunggu tahap: ${stage.name}`,
-    };
-  });
-
+  let currentStage: ScheduledSurgery['status'] = "Terjadwal";
+  const allPossibleStages: { name: ScheduledSurgery['status'], time: Date, desc: string }[] = [ { name: "Pasien Diterima", time: handoverTime, desc: "Pasien telah diterima tim OK." }, { name: "Persiapan Operasi", time: prepTime, desc: "Tim melakukan persiapan akhir." }, { name: "Operasi Berlangsung", time: scheduledTime, desc: "Operasi sedang berjalan." }, { name: "Operasi Selesai", time: surgeryEndTime, desc: "Prosedur operasi telah selesai." }, { name: "Ruang Pemulihan", time: recoveryTime, desc: "Pasien dalam tahap pemulihan." } ];
+  allPossibleStages.forEach(stage => { if (now >= stage.time) { currentStage = stage.name; } });
+  const manualStatusIndex = allPossibleStages.findIndex(s => s.name === surgery.status);
+  const dynamicStatusIndex = allPossibleStages.findIndex(s => s.name === currentStage);
+  if (manualStatusIndex > dynamicStatusIndex) { currentStage = surgery.status; }
+  const finalCurrentIndex = allPossibleStages.findIndex(s => s.name === currentStage);
+  const finalStages = allPossibleStages.map((stage, index) => ({ name: stage.name, timestamp: index <= finalCurrentIndex ? stage.time.toISOString() : null, desc: stage.desc }));
   return { stages: finalStages, currentStage };
 };
