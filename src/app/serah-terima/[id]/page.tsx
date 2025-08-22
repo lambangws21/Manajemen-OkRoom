@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockScheduledSurgeries, mockSurgeryBoard, mockStaffMembers } from '@/lib/mock-data';
 import { ScheduledSurgery, OngoingSurgery } from '@/types';
@@ -9,11 +9,12 @@ import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import { ArrowRightLeft } from 'lucide-react';
 
-export default function SerahTerimaDetailPage({ params }: { params: { id: string } }) {
+export default function SerahTerimaDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
   const router = useRouter();
   const [surgery, setSurgery] = useState<ScheduledSurgery | null | undefined>(undefined);
   const [notes, setNotes] = useState<string>('');
-  
+
   useEffect(() => {
     const findSurgery = (id: string) => mockScheduledSurgeries.find(s => s.id === id) || null;
     setSurgery(findSurgery(params.id));

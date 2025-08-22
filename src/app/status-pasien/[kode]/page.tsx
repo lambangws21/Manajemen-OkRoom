@@ -8,18 +8,19 @@ import { use } from 'react'; // <-- 1. Impor 'use' dari React
 
 interface StatusDetailPageProps {
   // Params bisa jadi sebuah Promise, jadi kita tandai
-  params: {
+  params: Promise<{
     kode: string;
-  } | Promise<{ kode: string }>;
+  } | Promise<{ kode: string }>>;
 }
 
 // 2. Hapus 'async' karena React.use() menangani sifat asinkron
-export default function StatusDetailPage({ params }: StatusDetailPageProps) {
+export default function StatusDetailPage(props: StatusDetailPageProps) {
+  const params = use(props.params);
   // 3. "Buka" atau "unwrap" params menggunakan React.use()
   // DIUBAH: Bungkus 'params' dengan Promise.resolve() untuk memastikan tipenya selalu benar
   const resolvedParams = use(Promise.resolve(params));
   const accessCode = resolvedParams.kode.trim();
-  
+
   const statusData = getMockPatientStatus(accessCode);
 
   if (!statusData) {
