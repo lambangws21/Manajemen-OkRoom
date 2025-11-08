@@ -23,8 +23,8 @@ import {
   Calendar,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import Card from '@/components/ui/card';
-import Button from '@/components/ui/button';
+import {Card }from '@/components/ui/ui/card';
+import {Button} from '@/components/ui/ui/button';
 import Link from 'next/link';
 import { Input } from '@/components/ui/ui/input';
 
