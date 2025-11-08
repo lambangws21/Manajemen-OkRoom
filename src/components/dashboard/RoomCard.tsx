@@ -1,6 +1,6 @@
 'use client';
 
-import Badge from '@/components/ui/Badge';
+import {Badge} from '@/components/ui/ui/badge';
 import { motion, Variants } from 'framer-motion'; 
 import { cn } from '@/lib/utils';
 // 🔹 Impor Tipe dasar dari @/types
@@ -97,7 +97,7 @@ function BaseRoomCard({ room, config }: { room: ProcessedRoom, config: StatusCon
       <div className="flex justify-between items-center mb-2">
         {/* 🔹 PERBAIKAN: Typo '...' diperbaiki dan warna disesuaikan */}
         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">OK {room.number}</h3>
-        <Badge colorScheme={config.color}>{config.label}</Badge>
+        <Badge >{config.label}</Badge>
       </div>
       
       {/* 🔹 Menampilkan deskripsi kamar (lebih relevan daripada 'type') */}

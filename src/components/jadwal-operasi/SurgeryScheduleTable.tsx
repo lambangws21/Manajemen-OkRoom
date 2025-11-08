@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { ScheduledSurgery, OperatingRoomShiftPopulated } from '@/types';
-import Card from '@/components/ui/card';
-import Badge from '@/components/ui/Badge';
-import Button from '@/components/ui/button';
+import {Card} from '@/components/ui/ui/card';
+import {Badge} from '@/components/ui/ui/badge';
+import{ Button }from '@/components/ui/ui/button';
 import { PlayCircle, Users, Hospital } from 'lucide-react';
 import { getCurrentShift } from '@/lib/utils';
 
@@ -87,7 +87,7 @@ export default function SurgeryScheduleTable({
                     </td>
 
                     <td>
-                      <Badge colorScheme={statusConfig[surgery.status] || 'gray'}>
+                      <Badge color={statusConfig[surgery.status] || 'gray'}>
                         {surgery.status}
                       </Badge>
                     </td>
@@ -136,7 +136,7 @@ export default function SurgeryScheduleTable({
                   <p className="font-bold text-lg">{surgery.patientName}</p>
                   <p className="text-sm text-gray-500">{surgery.mrn}</p>
                 </div>
-                <Badge colorScheme={statusConfig[surgery.status] || 'gray'}>
+                <Badge color={statusConfig[surgery.status] || 'gray'}>
                   {surgery.status}
                 </Badge>
               </div>

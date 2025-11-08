@@ -1,8 +1,8 @@
 'use client';
 import { ScheduledSurgery } from '@/types';
-import Card from '@/components/ui/card';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/Badge';
+import {Card }from '@/components/ui/ui/card';
+import {Button} from '@/components/ui/ui/button';
+import {Badge} from '@/components/ui/ui/badge';
 import { PhoneCall } from 'lucide-react';
 
 interface ControlBoardTableProps {

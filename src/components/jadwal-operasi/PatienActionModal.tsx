@@ -1,7 +1,7 @@
 'use client';
 
 import { ScheduledSurgery } from '@/types';
-import Button from '@/components/ui/button';
+import {Button} from '@/components/ui/ui/button';
 import { X, UserCheck, ArrowRightLeft, Activity } from 'lucide-react';
 
 // Tipe untuk status baru yang bisa diubah

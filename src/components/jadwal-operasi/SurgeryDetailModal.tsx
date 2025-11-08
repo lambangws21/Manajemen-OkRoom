@@ -1,7 +1,7 @@
 'use client';
 import { ScheduledSurgery } from '@/types';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/Badge';
+import{ Button} from '@/components/ui/ui/button';
+import {Badge} from '@/components/ui//ui/badge';
 import { X, User, Stethoscope, Calendar, ClipboardList } from 'lucide-react';
 
 interface SurgeryDetailModalProps {
@@ -65,7 +65,7 @@ export default function SurgeryDetailModal({
           </h2>
           <div className="flex items-center gap-4 mt-2">
             <p className="text-gray-500">ID: {surgery.id}</p>
-            <Badge colorScheme={statusConfig[surgery.status]}>
+            <Badge color={statusConfig[surgery.status]}>
               {surgery.status}
             </Badge>
           </div>
@@ -112,7 +112,7 @@ export default function SurgeryDetailModal({
           <Button variant="secondary" onClick={onClose}>
             Tutup
           </Button>
-          <Button variant="primary">Edit Jadwal</Button>
+          <Button variant="default">Edit Jadwal</Button>
         </footer>
       </div>
     </div>

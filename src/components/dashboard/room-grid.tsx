@@ -5,7 +5,7 @@ import { Loader2, AlertTriangle, User, Users, UserCircle2,ChevronLeft, ChevronRi
 import { toast } from 'sonner';
 // 🔹 Impor Tipe Jadwal (Asumsi Tipe ini ada di @/types)
 import { OperatingRoom, StaffMember, ScheduledSurgery } from '@/types'; 
-import Card from '@/components/ui/card'; // Asumsi Card adalah komponen UI dasar
+import {Card} from '@/components/ui/ui/card'; // Asumsi Card adalah komponen UI dasar
 
 // ----------------------------------------------------------------
 // 🔹 TIPE DATA DAN UTILITAS

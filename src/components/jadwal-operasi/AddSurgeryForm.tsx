@@ -1,7 +1,7 @@
 "use client";
 import { useState, FormEvent } from "react";
 import { ScheduledSurgery } from "@/types/schedule";
-import Button from "@/components/ui/button";
+import {Button} from "@/components/ui/ui/button";
 import {
   Select,
   SelectContent,
@@ -180,7 +180,7 @@ export default function AddSurgeryForm({ onClose, onSubmit }: AddSurgeryFormProp
               <Button type="button" variant="secondary" onClick={onClose}>
                 Batal
               </Button>
-              <Button type="submit" variant="primary">
+              <Button type="submit">
                 Simpan Jadwal
               </Button>
             </div>
