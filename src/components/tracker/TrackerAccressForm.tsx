@@ -3,9 +3,9 @@
 import { useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import {Input} from '@/components/ui/ui/ui';
-import Button from '@/components/ui/button';
+import{ Button} from '@/components/ui/ui/button';
 import Spinner from '@/components/ui/Spinner';
-import Card from '@/components/ui/card';
+import {Card} from '@/components/ui/ui/card';
 
 export default function TrackerAccessForm() {
   const [accessCode, setAccessCode] = useState<string>('');
@@ -58,7 +58,7 @@ export default function TrackerAccessForm() {
             {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
           </div>
 
-          <Button type="submit" variant="primary" disabled={isLoading} className="w-full">
+          <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? (
               <div className="flex items-center justify-center">
                 <Spinner size="sm" />

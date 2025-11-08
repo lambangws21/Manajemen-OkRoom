@@ -4,8 +4,8 @@ import { StaffMember } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, Scissors, Syringe, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import  Button  from "@/components/ui/button";
-import  Card  from "@/components/ui/card";
+import  {Button}  from "@/components/ui/ui/button";
+import { Card } from "@/components/ui/ui/card";
 
 interface ShiftColumnProps {
   shiftName: "Pagi" | "Siang" | "Malam";

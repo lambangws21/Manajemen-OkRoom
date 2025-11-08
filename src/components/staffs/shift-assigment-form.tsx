@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Staff } from "@/types/index";
 // DIPERBAIKI: Mengubah impor default menjadi NAMED IMPORT { Button } dan { Card }
-import  Button  from "@/components/ui/button"; 
-import  Card  from "@/components/ui/card"; 
+import { Button}  from "@/components/ui/ui/button"; 
+import  {Card } from "@/components/ui/ui/card"; 
 import { Save } from "lucide-react";
 
 type NurseShiftTeams = {

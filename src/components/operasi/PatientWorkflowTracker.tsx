@@ -3,8 +3,8 @@
 import { useState } from 'react';
 // 💥 DIHAPUS: StaffMember, PatientHandoverModal, ArrowRightLeft
 import { SurgeryLog, OngoingSurgery } from '@/types'; 
-import Button from '@/components/ui/button';
-import Card from '@/components/ui/card';
+import {Button} from '@/components/ui/ui/button';
+import {Card} from '@/components/ui/ui/card';
 import FinishSurgeryModal from './FinishSurgeryModal';
 import {
   CheckCircle,

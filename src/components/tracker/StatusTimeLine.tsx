@@ -2,8 +2,8 @@
 
 import { PatientStatusData } from '@/types';
 import TimelineItem from '@/components/tracker/TimeLineItem';
-import Card from '@/components/ui/card';
-import Button from '@/components/ui/button';
+import {Card }from '@/components/ui/ui/card';
+import{ Button} from '@/components/ui/ui/button';
 import Link from 'next/link';
 import { Home } from 'lucide-react';
 

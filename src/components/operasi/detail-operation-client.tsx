@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { OngoingSurgery, SurgeryLog } from "@/types";
 import PatientWorkflowTracker from "@/components/operasi/patient-workflow-tracker";
-import Card from "@/components/ui/card";
+import {Card }from "@/components/ui/ui/card";
 import { toast } from 'sonner';
 
 // ✅ Tipe aman, tanpa any

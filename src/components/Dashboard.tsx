@@ -1,6 +1,6 @@
 import { Room } from '@/types/';
-import Card from '@/components/ui/card';
-import Badge from '@/components/ui/Badge';
+import {Card} from '@/components/ui/ui/card';
+import {Badge} from '@/components/ui/ui/badge';
 
 interface RoomCardProps {
   room: Room;
@@ -24,7 +24,7 @@ export default function RoomCard({ room }: RoomCardProps) {
     <Card>
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-bold text-gray-800">Kamar {room.number}</h3>
-        <Badge colorScheme={config.color}>{config.label}</Badge>
+        <Badge >{config.label}</Badge>
       </div>
       <p className="text-sm text-gray-600">{room.type}</p>
     </Card>
