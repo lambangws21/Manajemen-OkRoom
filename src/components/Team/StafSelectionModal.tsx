@@ -4,7 +4,7 @@ import { useState } from "react";
 import { StaffMember } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2 } from "lucide-react";
-import  Button  from "@/components/ui/button";
+import  {Button}  from "@/components/ui/ui/button";
 
 interface StaffSelectionModalProps {
   staffList: StaffMember[];
@@ -156,7 +156,6 @@ export default function StaffSelectionModal({
               </Button>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
-                  variant="primary"
                   onClick={handleSave}
                   disabled={!isSelectionValid}
                   className={`rounded shadow-md ${

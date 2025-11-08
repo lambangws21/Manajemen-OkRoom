@@ -2,8 +2,8 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { ScheduledSurgery, StaffMember } from '@/types';
-import Button from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import {Button} from '@/components/ui/ui/button';
+import { Input } from '@/components/ui/ui/input';
 import { X, ArrowRightLeft, CheckCircle2, Search, Loader2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 // 💥 DIHAPUS: import { mockStaffMembers } from '@/lib/mock-data';

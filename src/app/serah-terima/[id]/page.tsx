@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { OngoingSurgery } from '@/types'; // Fokus pada OngoingSurgery
 import {Card }from '@/components/ui/ui/card';
-import Button from '@/components/ui/button';
+import {Button} from '@/components/ui/ui/button';
 import Spinner from '@/components/ui/Spinner';
 import {  Play, Square, CheckSquare } from 'lucide-react';
 import { toast } from 'sonner';

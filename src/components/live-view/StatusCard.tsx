@@ -1,7 +1,7 @@
 'use client';
 
 import { OngoingSurgery } from '@/types/index';
-import Card from '@/components/ui/card';
+import {Card} from '@/components/ui/ui/card';
 import { Clock, Syringe, Bed, Check, Clock1, User, HeartPulse, Hospital, Tag, } from 'lucide-react';
 
 // Tipe yang diperluas karena ongoingSurgeries menyimpan ID, nama pasien, dan MRN

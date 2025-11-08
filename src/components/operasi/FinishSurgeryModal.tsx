@@ -2,8 +2,8 @@
 import { useState } from 'react';
 // Asumsi: Kita akan memodifikasi/memperluas tipe SurgeryLog secara lokal
 import { SurgeryLog } from '@/types'; 
-import Button from '@/components/ui/button';
-import {Input} from '@/components/ui/Input';
+import {Button} from '@/components/ui/ui/button';
+import {Input} from '@/components/ui/ui/input';
 import { X } from 'lucide-react';
 
 // 💡 PENAMBAHAN TIPE LOKAL: Untuk memperbaiki error 2322 & 2352
