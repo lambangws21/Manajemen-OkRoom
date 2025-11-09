@@ -100,9 +100,6 @@ export default function PublicSharePage() {
 
             {/* 📍 Info Tambahan */}
             <div className="mt-5 space-y-2">
-              <p className="text-gray-700 text-base">
-                <b>Kamar Operasi:</b> {data!.operatingRoom}
-              </p>
               <p className="text-xs text-gray-400 flex justify-center items-center gap-1">
                 <Clock size={14} /> Diperbarui:{' '}
                 {new Date(data!.lastUpdated).toLocaleTimeString('id-ID')}
