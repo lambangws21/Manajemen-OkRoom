@@ -121,8 +121,8 @@ export default function OperatingRoomFlow({
     switch (surgery.status as string) {
       case "Pasien Diterima":
         return (
-          <Button onClick={() => onUpdate(surgery.id, "Persiapan Operasi")}>
-            <UserCheck className="mr-2" size={18} />
+          <Button onClick={() => onUpdate(surgery.id, "Persiapan Operasi")}  className='bg-orange-400'>
+            <UserCheck size={18} />
             Mulai Persiapan di OK
           </Button>
         );
@@ -131,13 +131,13 @@ export default function OperatingRoomFlow({
         return (
           <Button onClick={() => onUpdate(surgery.id, "Operasi Berlangsung", { 
              timePreparationStarted: new Date().toISOString() // Simpan log waktu
-          } as SurgeryLog)}>
+          } as SurgeryLog)} className='bg-green-500'> 
             Mulai Operasi
           </Button>
         );
       case "Operasi Berlangsung":
         return (
-          <Button onClick={() => setIsFinishModalOpen(true)}>
+          <Button onClick={() => setIsFinishModalOpen(true)}  className='bg-green-500'>
             Selesaikan Operasi
           </Button>
         );
@@ -146,7 +146,7 @@ export default function OperatingRoomFlow({
         return (
           <Button onClick={() => onUpdate(surgery.id, "Ruang Pemulihan", {
             timeRecoveryStarted: new Date().toISOString() // Simpan log waktu
-          } as SurgeryLog)}>
+          } as SurgeryLog)}  className='bg-green-500'>
             Pindah ke Ruang Pemulihan
           </Button>
         );
@@ -167,8 +167,8 @@ export default function OperatingRoomFlow({
 
   return (
     <>
-      <Card>
-        <h2 className="text-xl font-bold mb-2 text-slate-700 dark:text-gray-600">Alur Kerja Operasi</h2>
+      <Card className="mb-4 p-5 shadow-xl border-t-2 dark:border-gray-200 dark:border-t-2">
+        <h2 className="text-xl font-bold mb-2 text-slate-700 dark:text-gray-600 mt-5" >Alur Kerja Operasi</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-6">
           Status Saat Ini:{" "}
           <span className="font-bold text-blue-600 dark:text-blue-400">
@@ -176,7 +176,7 @@ export default function OperatingRoomFlow({
           </span>
         </p>
         {/* Visualisasi Langkah yang telah dimodifikasi */}
-        <div className="flex flex-wrap items-center mb-8">
+        <div className="flex flex-wrap items-center mb-8 p-4">
           {steps.map((step, index) => {
             const isCompleted = index <= currentStepIndex;
             const timeKey = getTimeKeyForStep(step);
@@ -188,7 +188,7 @@ export default function OperatingRoomFlow({
             const timeDisplay = formatTime(timeValue as string | undefined);
 
             return (
-              <div key={step} className="flex items-center min-w-[120px] flex-1">
+              <div key={step} className="flex items-center min-w-[120px] flex-1 p-5">
                 <div className="flex flex-col items-center">
                   {isCompleted ? (
                     <CheckCircle size={32} className="text-green-500" />

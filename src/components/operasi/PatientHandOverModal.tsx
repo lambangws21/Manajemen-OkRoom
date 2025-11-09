@@ -107,8 +107,8 @@ export default function PatientHandoverModal({ surgery, onClose, onSubmit }: Pat
         </header>
 
         <form onSubmit={handleSubmit} className="flex-grow flex flex-col overflow-hidden">
-          <div className="flex-grow overflow-y-auto pr-2 space-y-4">
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md text-gray-600" >
+          <div className="flex-grow overflow-y-auto pr-3 space-y-4">
+            <div className="p-6 bg-gray-50 dark:bg-gray-700/50 rounded-md text-gray-600" >
                 <p><strong>Pasien:</strong> {surgery.patientName}</p>
                 <p><strong>No. RM:</strong> {surgery.mrn}</p>
                 <p><strong>Status Saat Ini:</strong> {surgery.status}</p>

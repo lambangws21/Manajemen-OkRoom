@@ -198,7 +198,7 @@ export default function JadwalOperasiPage() {
       case "Terjadwal":
         return "bg-blue-300 dark:bg-blue-800/30";
       case "Terkonfirmasi":
-        return "bg-yellow-300 dark:bg-yellow-400/60";
+        return "bg-yellow-300 dark:bg-yellow-400/80";
       case "Dibatalkan":
         return "bg-red-500 dark:bg-red-700/50";
       case "Siap Panggil":

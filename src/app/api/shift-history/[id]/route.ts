@@ -30,7 +30,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 
-const HISTORY_COLLECTION = "shift-history";
+const HISTORY_COLLECTION = "shiftHistory";
 
 /**
  * ✅ DELETE — Menghapus satu entri histori shift berdasarkan ID

@@ -238,7 +238,7 @@ export default function SerahTerimaPage() {
         }),
       });
       if (!res.ok) throw new Error('Gagal melakukan serah terima.');
-      toast.success(`✅ ${selectedPatient.patientName} diterima`);
+      toast.success(` ${selectedPatient.patientName} diterima`);
       setSelectedPatient(null);
       fetchData();
     } catch {

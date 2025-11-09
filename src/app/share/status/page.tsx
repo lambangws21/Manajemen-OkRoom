@@ -13,18 +13,17 @@ interface PublicSurgeryData {
 }
 
 export default function PublicSharePage() {
-  const { id } = useParams();
+  const { mrn } = useParams();
   const [data, setData] = useState<PublicSurgeryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
 
-  // ✅ Fix: gunakan useCallback agar aman jadi dependency useEffect
   const fetchData = useCallback(async () => {
-    if (!id) return;
+    if (!mrn) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/share/${id}`, { cache: 'no-store' });
+      const res = await fetch(`/api/share/${mrn}`, { cache: 'no-store' });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Data tidak ditemukan');
       setData(json);
@@ -35,16 +34,14 @@ export default function PublicSharePage() {
     } finally {
       setLoading(false);
     }
-  }, [id]); // ✅ tambahkan id sebagai dependency agar stabil
+  }, [mrn]);
 
-  // ⏱️ Auto-refresh tiap 30 detik
   useEffect(() => {
-    fetchData(); // jalankan pertama kali
+    fetchData();
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [fetchData]); // ✅ sudah aman, ESLint tidak protes lagi
+  }, [fetchData]);
 
-  // Warna status
   const statusColor = (status: string) => {
     if (status.includes('Menunggu')) return 'bg-yellow-100 text-yellow-800 border-yellow-300';
     if (status.includes('Berlangsung')) return 'bg-red-100 text-red-800 border-red-300';

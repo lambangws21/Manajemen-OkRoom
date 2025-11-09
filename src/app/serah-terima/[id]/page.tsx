@@ -105,7 +105,7 @@ export default function OperasiDetailPage() {
     switch (surgery.status) {
       case 'Persiapan Operasi':
         return (
-          <Button onClick={() => handleUpdateStatus('Operasi Berlangsung')} disabled={isUpdating} className="w-full bg-green-600 hover:bg-green-700">
+          <Button onClick={() => handleUpdateStatus('Operasi Berlangsung')} disabled={isUpdating} className="w-full bg-green-700 hover:bg-green-700">
             <Play size={16} className="mr-2" /> Mulai Operasi
           </Button>
         );
@@ -128,7 +128,7 @@ export default function OperasiDetailPage() {
   };
 
   return (
-    <div className="flex items-center justify-center p-4 md:p-6 lg:p-8">
+    <div className="flex items-center justify-center p-8 md:p-6 lg:p-8">
       <Card className="w-full max-w-2xl">
         <header className="flex items-center border-b dark:border-gray-700 pb-4 mb-6">
           {/* 💥 PERBAIKAN: Ganti ikon ke status 'Play' */}

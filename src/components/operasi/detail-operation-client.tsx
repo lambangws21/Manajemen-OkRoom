@@ -77,8 +77,8 @@ export default function OperasiDetailClient({ initialSurgery }: OperasiDetailCli
         </div>
 
         <div className="lg:col-span-1">
-          <Card>
-            <h3 className="text-lg font-bold border-b pb-2 mb-3 dark:border-gray-700 dark:text-gray-600">
+          <Card className="p-5 shadow">
+            <h3 className="text-lg font-bold border-b pb-2 mb-3 text-slate-500 dark:border-gray-700 dark:text-gray-600">
               Detail Pasien
             </h3>
             <div className="space-y-2 text-sm text-gray-700 dark:text-gray-600">

@@ -31,7 +31,7 @@ export default function Navbar({ pageTitle = 'Dashboard', toggleSidebar }: Navba
   const userInitial = userName.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/70 dark:bg-gray-900/60 border-b border-gray-200/60 dark:border-gray-700/50 shadow-sm transition-all">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/90  dark:bg-gray-900/60 border-b border-gray-200/60 dark:border-gray-700/50 shadow-sm transition-all">
       <div className="flex justify-between items-center px-5 py-3">
         {/* Left Section */}
         <div className="flex items-center gap-3">
