@@ -10,6 +10,7 @@ import {
   Stethoscope,
   X,
   HeartPulse,
+  CalendarDays
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -23,7 +24,10 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) 
 
   const navItems = [
     { href: '/dashboard', label: 'Jadwal Operasi', icon: LayoutDashboard },
+    { href: "/jadwal-operasi", label:'Jadwal Operasi', icon: CalendarDays },
+
     { href: '/manajemen-tim', label: 'Manajemen Tim', icon: Users },
+
     { href: '/serah-terima', label: 'Serah Terima', icon: ArrowRightLeft },
     { href: '/live-view/operasi', label: 'Live View', icon: MonitorPlay },
     { href: '/status-pasien', label: 'Lacak Pasien', icon: Stethoscope },
