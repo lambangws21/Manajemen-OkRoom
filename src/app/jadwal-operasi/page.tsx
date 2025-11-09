@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,60 +11,103 @@ import {
 import type { ScheduledSurgery, NewScheduledSurgery } from "@/types";
 import { ScheduleForm } from "@/components/schedule/ScheduleForm";
 import { toast } from "sonner";
-import { Pencil, Search, Trash, Calendar, ChevronLeft, ChevronRight, Users } from "lucide-react"; // Impor ikon baru
+import {
+  Pencil,
+  Search,
+  Trash,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  AlertTriangle,
+} from "lucide-react";
 
-// 🔹 1. Komponen Pagination (BARU) 🔹
-// -------------------------------------------------------------------
-interface PaginationControlsProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
 
-const PaginationControls: React.FC<PaginationControlsProps> = ({
+// 📌 Pagination
+const PaginationControls = ({
   currentPage,
   totalPages,
   onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }) => {
-  const handlePrev = () => {
-    if (currentPage > 1) onPageChange(currentPage - 1);
-  };
-  const handleNext = () => {
-    if (currentPage < totalPages) onPageChange(currentPage + 1);
-  };
-  
-  // Jangan tampilkan pagination jika hanya ada 1 halaman
   if (totalPages <= 1) return null;
-
   return (
-    <div className="flex justify-between items-center mt-5 p-2 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
-      <motion.button
-        onClick={handlePrev}
-        disabled={currentPage === 1}
-        whileTap={{ scale: 0.95 }}
-        className="flex items-center gap-1 rounded-md bg-gray-200 dark:bg-gray-700 px-3 py-1.5 text-sm font-semibold text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-      >
-        <ChevronLeft size={16} />
-        Sebelumnya
-      </motion.button>
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-5 gap-3 p-3 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="flex justify-center sm:justify-start gap-2">
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-semibold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-40"
+        >
+          <ChevronLeft size={16} /> Sebelumnya
+        </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-semibold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-40"
+        >
+          Berikutnya <ChevronRight size={16} />
+        </motion.button>
+      </div>
+      <span className="text-center sm:text-right text-sm text-gray-700 dark:text-gray-300">
         Halaman {currentPage} dari {totalPages}
       </span>
-      <motion.button
-        onClick={handleNext}
-        disabled={currentPage === totalPages}
-        whileTap={{ scale: 0.95 }}
-        className="flex items-center gap-1 rounded-md bg-gray-200 dark:bg-gray-700 px-3 py-1.5 text-sm font-semibold text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-      >
-        Berikutnya
-        <ChevronRight size={16} />
-      </motion.button>
     </div>
   );
 };
-// -------------------------------------------------------------------
-// 🔹 AKHIR Komponen Pagination 🔹
-// -------------------------------------------------------------------
+
+
+// 📌 Modal Konfirmasi
+function ConfirmModal({
+  message,
+  onConfirm,
+  onCancel,
+}: {
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-[90%] max-w-sm text-center border border-gray-200 dark:border-gray-700"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+      >
+        <AlertTriangle className="text-red-500 mx-auto mb-3" size={40} />
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+          Konfirmasi
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm">{message}</p>
+
+        <div className="flex justify-center gap-3">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600"
+          >
+            Batal
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700"
+          >
+            Hapus
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 
 export default function JadwalOperasiPage() {
@@ -74,15 +117,14 @@ export default function JadwalOperasiPage() {
   const [editing, setEditing] = useState<ScheduledSurgery | null>(null);
   const [adding, setAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  
-  // 🔹 2. Filter Default ke Hari Ini (PERUBAHAN) 🔹
-  const today = new Date().toISOString().split("T")[0];
-  const [startDate, setStartDate] = useState(today); // Default: hari ini
-  const [endDate, setEndDate] = useState(today); // Default: hari ini
+  const [confirmId, setConfirmId] = useState<string | null>(null);
 
-  // 🔹 3. State Pagination (BARU) 🔹
+  const today = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Atur jumlah item per halaman
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     void loadData();
@@ -100,7 +142,6 @@ export default function JadwalOperasiPage() {
     }
   }
 
-  // ... (Fungsi handleAdd, handleEdit, handleDelete tetap sama) ...
   async function handleAdd(schedule: NewScheduledSurgery) {
     setSubmitting(true);
     try {
@@ -129,20 +170,18 @@ export default function JadwalOperasiPage() {
     }
   }
 
-  async function handleDelete(id: string) {
-    if (window.confirm("Apakah Anda yakin ingin menghapus jadwal ini?")) {
-      try {
-        await deleteSchedule(id);
-        toast.success("Jadwal berhasil dihapus.");
-        await loadData();
-      } catch {
-        toast.error("Gagal menghapus jadwal.");
-      }
+  async function handleConfirmDelete() {
+    if (!confirmId) return;
+    try {
+      await deleteSchedule(confirmId);
+      toast.success("Jadwal berhasil dihapus.");
+      setConfirmId(null);
+      await loadData();
+    } catch {
+      toast.error("Gagal menghapus jadwal.");
     }
   }
 
-
-  // 🔹 Filter pencarian + tanggal (Logika tetap sama)
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return schedules.filter((s) => {
@@ -150,23 +189,12 @@ export default function JadwalOperasiPage() {
         s.patientName.toLowerCase().includes(term) ||
         s.doctorName.toLowerCase().includes(term) ||
         s.procedure.toLowerCase().includes(term) ||
-        s.status.toLowerCase().includes(term) ||
-        // 🔹 PERMINTAAN 2: Pasien 'Dibatalkan' akan tetap muncul jika dicari
-        // atau jika filternya cocok.
-        (term === 'dibatalkan' && s.status === 'Dibatalkan');
+        s.status.toLowerCase().includes(term);
 
-      const scheduleDate = new Date(s.scheduledAt);
-      
-      // Penyesuaian logika tanggal agar lebih inklusif
+      const date = new Date(s.scheduledAt);
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate + "T23:59:59") : null;
-      
-      if(start) start.setHours(0,0,0,0); // Set ke awal hari
-
-      const afterStart = start ? scheduleDate >= start : true;
-      const beforeEnd = end ? scheduleDate <= end : true;
-
-      return matchesText && afterStart && beforeEnd;
+      return matchesText && (!start || date >= start) && (!end || date <= end);
     });
   }, [schedules, searchTerm, startDate, endDate]);
 
@@ -178,51 +206,15 @@ export default function JadwalOperasiPage() {
       ),
     [filtered]
   );
-  
-  // 🔹 4. Reset halaman saat filter berubah (BARU) 🔹
-  useEffect(() => {
-    setCurrentPage(1); // Kembali ke halaman 1 setiap kali filter berubah
-  }, [sorted]);
 
-  // 🔹 5. Logika Slicing untuk Pagination (BARU) 🔹
+  useEffect(() => setCurrentPage(1), [sorted]);
   const totalPages = Math.ceil(sorted.length / itemsPerPage);
   const paginatedSchedules = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return sorted.slice(startIndex, startIndex + itemsPerPage);
+    const start = (currentPage - 1) * itemsPerPage;
+    return sorted.slice(start, start + itemsPerPage);
   }, [sorted, currentPage, itemsPerPage]);
 
-
-  // ... (Fungsi getStatusColor tetap sama) ...
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Terjadwal":
-        return "bg-blue-300 dark:bg-blue-800/30";
-      case "Terkonfirmasi":
-        return "bg-yellow-300 dark:bg-yellow-400/80";
-      case "Dibatalkan":
-        return "bg-red-500 dark:bg-red-700/50";
-      case "Siap Panggil":
-        return "bg-orange-300 dark:bg-orange-400/60";
-      case "Dipanggil":
-        return "bg-green-300 dark:bg-green-900";
-      case "Pasien Diterima":
-        return "bg-sky-300 dark:bg-sky-700/60";
-      case "Persiapan Operasi":
-        return "bg-purple-300 dark:bg-purple-700/60";
-      case "Operasi Berlangsung":
-        return "bg-gray-300 dark:bg-gray-800/40";
-      case "Operasi Selesai":
-        return "bg-emerald-300 dark:bg-emerald-700/70";
-      case "Ruang Pemulihan":
-        return "bg-cyan-300 dark:bg-cyan-400/80";
-      default:
-        return "bg-white dark:bg-gray-700";
-    }
-  };
-
-
-  if (loading) {
-    // ... (Indikator loading tetap sama) ...
+  if (loading)
     return (
       <div className="flex items-center justify-center py-10">
         <motion.div
@@ -232,83 +224,56 @@ export default function JadwalOperasiPage() {
         />
       </div>
     );
-  }
-
-  // 🔹 6. Hapus logika 'shouldScroll' (PERUBAHAN) 🔹
-  // const shouldScroll = sorted.length > 15; // Tidak diperlukan lagi
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 md:p-6 space-y-5 transition-colors duration-300">
-      {/* 🔹 Header */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-3 sm:p-5 space-y-5 transition-colors duration-300">
+      {/* HEADER */}
+      <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Manajemen Jadwal Operasi
           </h1>
-          
-          {/* 🔹 7. Tampilkan Jumlah Pasien (BARU) 🔹 */}
-          <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-3 py-1 rounded-full">
-            <Users size={16} />
-            <span className="font-bold text-sm">
-              {sorted.length} Pasien
-            </span>
+          <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-3 py-1 rounded-full w-fit">
+            <Users size={16} />{" "}
+            <span className="font-semibold text-sm">{sorted.length} Pasien</span>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          {/* ... (Search bar dan filter tanggal tetap sama) ... */}
-          <div className="relative w-full sm:w-64">
+        {/* Search & Filter */}
+        <div className="flex flex-col md:flex-row md:items-center gap-3 w-full lg:w-auto">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-2 top-2.5 text-gray-400 dark:text-gray-500" size={18} />
             <input
               type="text"
               placeholder="Cari pasien, dokter, atau status..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-8 pr-3 py-2 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
-                         border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+              className="w-full pl-8 pr-3 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="flex gap-2 items-center">
-            <div className="relative">
-              <Calendar className="absolute left-2 top-2.5 text-gray-400 dark:text-gray-500" size={18} />
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="pl-8 pr-2 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-200"
-              />
-            </div>
-            <span className="text-gray-600 dark:text-gray-300 text-sm">s.d</span>
-            <div className="relative">
-              <Calendar className="absolute left-2 top-2.5 text-gray-400 dark:text-gray-500" size={18} />
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="pl-8 pr-2 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-200"
-              />
-            </div>
+          <div className="flex gap-2">
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-2 py-2 rounded-md text-sm bg-white dark:bg-gray-800 border dark:border-gray-700" />
+            <span className="text-gray-600 dark:text-gray-300 text-sm self-center">s.d</span>
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-2 py-2 rounded-md text-sm bg-white dark:bg-gray-800 border dark:border-gray-700" />
           </div>
-          
           <motion.button
+            whileTap={{ scale: 0.97 }}
             onClick={() => {
               setAdding(true);
               setEditing(null);
             }}
-            whileTap={{ scale: 0.98 }}
-            className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white
-                       hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 shadow-sm"
+            className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 shadow-sm"
           >
             + Tambah Jadwal
           </motion.button>
         </div>
       </div>
 
-      {/* 🔹 Form Area (Tetap sama) */}
-      <AnimatePresence mode="wait">
+      {/* FORM */}
+      <AnimatePresence>
         {adding && (
           <ScheduleForm
-            key="create-form"
+            key="add"
             mode="create"
             onSubmit={handleAdd}
             onCancel={() => setAdding(false)}
@@ -317,7 +282,7 @@ export default function JadwalOperasiPage() {
         )}
         {editing && (
           <ScheduleForm
-            key="edit-form"
+            key="edit"
             mode="edit"
             initialData={editing}
             onSubmit={handleEdit}
@@ -327,53 +292,36 @@ export default function JadwalOperasiPage() {
         )}
       </AnimatePresence>
 
-      {/* 🔹 8. Mobile Card View (PERUBAHAN) 🔹 */}
-      <div
-        // Hapus: max-h-[70vh] overflow-y-auto
-        className="grid gap-4 sm:hidden"
-      >
-        {/* Map menggunakan 'paginatedSchedules' BUKAN 'sorted' */}
+      {/* 📱 MOBILE CARD VIEW */}
+      <div className="grid gap-4 sm:hidden">
         {paginatedSchedules.map((s) => (
           <motion.div
             key={s.id}
             layout
-            className={`rounded-xl p-5 shadow-md border border-gray-200 dark:border-gray-700 ${getStatusColor(
-              s.status
-            )}`}
+            className={`rounded-xl p-4 border border-gray-300 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800`}
           >
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-semibold">{s.patientName}</h2>
-              <span className="text-xs font-semibold px-2 py-1 rounded-md bg-white/60 dark:bg-black/40">
-                {s.status}
-              </span>
-            </div>
-            <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-              <p><strong>MRN:</strong> {s.mrn}</p>
-              <p><strong>Prosedur:</strong> {s.procedure}</p>
-              <p><strong>Dokter:</strong> {s.doctorName}</p>
-              <p><strong>Waktu:</strong>
-                {new Date(s.scheduledAt).toLocaleString("id-ID", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}
-              </p>
-              {s.notes && (
-                <p className="italic text-gray-600 dark:text-gray-400">{s.notes}</p>
-              )}
-            </div>
-            <div className="flex justify-end mt-3 gap-2">
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+              {s.patientName}
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300">
+              {s.procedure} • Dr. {s.doctorName}
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              {new Date(s.scheduledAt).toLocaleString("id-ID", {
+                dateStyle: "short",
+                timeStyle: "short",
+              })}
+            </p>
+            <div className="flex justify-end gap-2 mt-3">
               <button
-                onClick={() => {
-                  setEditing(s);
-                  setAdding(false);
-                }}
-                className="rounded-md bg-yellow-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-yellow-600"
+                onClick={() => setEditing(s)}
+                className="px-3 py-1 rounded-md text-xs font-semibold bg-yellow-500 text-white hover:bg-yellow-600"
               >
                 Edit
               </button>
               <button
-                onClick={() => void handleDelete(s.id)}
-                className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
+                onClick={() => setConfirmId(s.id)}
+                className="px-3 py-1 rounded-md text-xs font-semibold bg-red-600 text-white hover:bg-red-700"
               >
                 Hapus
               </button>
@@ -382,88 +330,78 @@ export default function JadwalOperasiPage() {
         ))}
       </div>
 
-      {/* 🔹 9. Desktop Table View (PERUBAHAN) 🔹 */}
-      <div
-        // Hapus: max-h-[70vh] overflow-y-auto
-        className="hidden sm:block border border-gray-200 dark:border-gray-700 rounded-md shadow"
-      >
-        <table className="min-w-full table-auto text-sm">
-          <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
-            {/* ... (Header tabel tetap sama) ... */}
+      {/* 💻 DESKTOP TABLE (ZEBRA STRIPE) */}
+      <div className="hidden sm:block overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-md shadow bg-white dark:bg-gray-900">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>
-              {[
-                "Nama Pasien", "MRN", "Prosedur", "Assuransi", "Ruang", "OR",
-                "Dokter", "Waktu", "Catatan", "status", "",
-              ].map((h) => (
-                <th key={h} className="px-3 py-2 font-semibold text-gray-900 dark:text-gray-100">
-                  {h}
+              {["Pasien","MRN","Prosedur","Asuransi","Ruang","OR","Dokter","Waktu","Status","Aksi"].map((head) => (
+                <th key={head} className="px-3 py-2 font-semibold text-gray-900 dark:text-slate-100 whitespace-nowrap">
+                  {head}
                 </th>
               ))}
             </tr>
           </thead>
+
           <tbody>
-            <AnimatePresence>
-              {/* Map menggunakan 'paginatedSchedules' BUKAN 'sorted' */}
-              {paginatedSchedules.map((s) => (
-                <motion.tr
-                  key={s.id}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={`${getStatusColor(
-                    s.status
-                  )} border-t border-gray-200 dark:border-gray-700`}
-                >
-                  <td className="px-3 py-2 truncate">{s.patientName}</td>
-                  <td className="px-3 py-2 truncate">{s.mrn}</td>
-                  <td className="px-3 py-2 truncate">{s.procedure}</td>
-                  <td className="px-3 py-2 truncate">{s.assurance}</td>
-                  <td className="px-3 py-2 truncate">{s.room}</td>
-                  <td className="px-3 py-2 truncate">OR {s.assignedOR}</td>
-                  <td className="px-3 py-2 truncate">{s.doctorName}</td>
-                  
-                  <td className="px-3 py-2 truncate">
-                    {new Date(s.scheduledAt).toLocaleString("id-ID", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </td>
-                  {/* <td className="px-3 py-2 truncate font-semibold">{s.status}</td> */}
-                  <td className="px-3 py-2 truncate">{s.notes}</td>
-                  <td className="px-3 py-2 truncate">{s.status}</td>
-                  <td className="px-3 py-2">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          setEditing(s);
-                          setAdding(false);
-                        }}
-                        className="rounded bg-yellow-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-yellow-600"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => void handleDelete(s.id)}
-                        className="rounded bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
-                      >
-                        <Trash className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
+            {paginatedSchedules.map((s, i) => (
+              <motion.tr
+                key={s.id}
+                layout
+                className={`${i % 2 === 0 ? "bg-gray-50 dark:bg-gray-800/60" : "bg-gray-100 dark:bg-gray-800/30"} border-t border-gray-200 dark:border-gray-700`}
+              >
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{s.patientName}</td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{s.mrn}</td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{s.procedure}</td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{s.assurance}</td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{s.room}</td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">OR {s.assignedOR}</td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{s.doctorName}</td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">
+                  {new Date(s.scheduledAt).toLocaleString("id-ID", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                </td>
+                <td className="px-3 py-2 text-slate-700 dark:text-slate-200">{s.status}</td>
+                <td className="px-3 py-2 text-center">
+                  <div className="flex gap-2 justify-center">
+                    <button
+                      onClick={() => setEditing(s)}
+                      className="rounded bg-yellow-500 px-2 py-1 text-xs text-white hover:bg-yellow-600"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      onClick={() => setConfirmId(s.id)}
+                      className="rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700"
+                    >
+                      <Trash size={14} />
+                    </button>
+                  </div>
+                </td>
+              </motion.tr>
+            ))}
           </tbody>
         </table>
       </div>
 
-      {/* 🔹 10. Tambahkan Kontrol Pagination (BARU) 🔹 */}
       <PaginationControls
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
+
+      {/* MODAL */}
+      <AnimatePresence>
+        {confirmId && (
+          <ConfirmModal
+            message="Apakah Anda yakin ingin menghapus jadwal ini?"
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setConfirmId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

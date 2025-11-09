@@ -1,180 +1,6 @@
-// 'use client';
-
-// import { useState, useEffect, useCallback } from 'react';
-// // 💥 PERBAIKAN: Hanya impor tipe dasar yang diasumsikan ada di '@/types'.
-// import { StaffMember, NurseShiftTeams } from '@/types'; 
-// // REMOVED: import { Filters, RoomStatus } from '@/components/dashboard/FilterControls';
-
-// import { getGreeting, getCurrentShift } from '@/lib/utils';
-// import { cn } from '@/lib/utils';
-// import { motion, AnimatePresence } from 'framer-motion';
-// import { Loader2, AlertTriangle } from 'lucide-react'; 
-
-// // Impor komponen
-// import ControlBoard from '@/components/schedule/schedule-tabel';
-// import TeamShiftCards from '@/components/dashboard/TeamShiftCard';
-// import RoomGrid from '@/components/dashboard/RoomGrid';
-// // REMOVED: import FilterControls from '@/components/dashboard/FilterControls';
-// import DashboardHeader from '@/components/dashboard/DashboardHeaders';
-
-
-// /* ============================
-//    TIPE DATA LOKAL (Didefinisikan ulang untuk mengatasi Error 2305)
-//    ============================ */
-// type ShiftKey = 'Pagi' | 'Siang' | 'Malam';
-
-// // 🔹 DIDEFINISIKAN ULANG SECARA LOKAL: Tipe yang hilang dari import
-// type ResponsibleStaffByShift = { [key in ShiftKey]: StaffMember | null; };
-// // 🔹 DIDEFINISIKAN ULANG SECARA LOKAL: Tipe Filters yang dibutuhkan RoomGrid
-// // interface Filters { search: string; status: 'All' | string; }
-
-
-// const DEFAULT_RESPONSIBLE_STAFF: ResponsibleStaffByShift = { Pagi: null, Siang: null, Malam: null };
-
-// // Struktur ShiftAssignment yang Sesuai (menggunakan tipe impor + tipe lokal)
-// interface ShiftAssignment {
-//     anesthesiaTeam: StaffMember[];
-//     nurseTeams: NurseShiftTeams;
-//     responsibleStaffByShift: ResponsibleStaffByShift;
-// }
-// type ApiErrorResponse = { error: string };
-
-
-// type ActiveTab = 'pasien' | 'ringkasan';
-
-// export default function DashboardPage() {
-//   // State untuk data API Tim Jaga
-//   const [shiftData, setShiftData] = useState<ShiftAssignment | null>(null);
-//   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
-//   const [teamError, setTeamError] = useState<string | null>(null);
-  
-//   // State yang sudah ada
-//   const [activeShift] = useState<ShiftKey>(getCurrentShift());
-//   const [greeting, setGreeting] = useState('');
-//   const [activeTab, setActiveTab] = useState<ActiveTab>('pasien'); 
-//   // REMOVED: const [roomFilters, setRoomFilters] = useState<Filters>({ search: '', status: 'All' });
-  
-//   useEffect(() => { setGreeting(getGreeting()); }, []);
-
-//   // Fungsi untuk mengambil data tim jaga
-//   const fetchShiftData = useCallback(async () => {
-//     setIsLoadingTeams(true);
-//     setTeamError(null);
-//     try {
-//       const res = await fetch('/api/shift-assignments');
-//       if (!res.ok) {
-//         const data = await res.json() as ApiErrorResponse;
-//         throw new Error(data.error || 'Gagal memuat data tim jaga.');
-//       }
-//       const data = await res.json() as Partial<ShiftAssignment>;
-      
-//       setShiftData({
-//         anesthesiaTeam: data.anesthesiaTeam || [],
-//         // NurseTeams dan ResponsibleStaffByShift harus dicek agar sesuai struktur map
-//         nurseTeams: data.nurseTeams || { Pagi: [], Siang: [], Malam: [] },
-//         responsibleStaffByShift: data.responsibleStaffByShift || DEFAULT_RESPONSIBLE_STAFF,
-//       });
-      
-//     } catch (err) {
-//       if (err instanceof Error) {
-//         setTeamError(err.message);
-//       } else {
-//         setTeamError('Terjadi kesalahan yang tidak diketahui.');
-//       }
-//     } finally {
-//       setIsLoadingTeams(false);
-//     }
-//   }, []);
-
-//   // Panggil fetchShiftData saat komponen dimuat
-//   useEffect(() => {
-//     fetchShiftData();
-//   }, [fetchShiftData]);
-
-  
-//   const tabs = [
-//     { id: 'pasien', label: `Papan Kendali Pasien` },
-//     { id: 'ringkasan', label: 'Ringkasan Tim & Kamar' },
-//   ];
-
-//   return (
-//     <div className="p-4 md:p-6">
-//       <header className="mb-6">
-//         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">{greeting}, PJ Ruang Operasi!</h1>
-//         <p className="text-md text-gray-500 dark:text-gray-400 mt-1">
-//           Saat ini shift <span className="font-semibold text-green-600 dark:text-green-400">{activeShift}</span> sedang berlangsung.
-//         </p>
-//       </header>
-      
-//       <DashboardHeader />
-      
-//       <div className="mt-8 mb-6 border-b border-gray-200 dark:border-gray-700">
-//         <nav className="flex space-x-6 overflow-x-auto">
-//           {tabs.map(tab => (
-//             <button key={tab.id} onClick={() => setActiveTab(tab.id as ActiveTab)} className={cn('relative py-4 px-1 text-sm sm:text-base font-medium whitespace-nowrap', activeTab === tab.id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300')}>
-//               {tab.label}
-//               {activeTab === tab.id && (
-//                 <motion.div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" layoutId="underline" />
-//               )}
-//             </button>
-//           ))}
-//         </nav>
-//       </div>
-
-//       <AnimatePresence mode="wait">
-//         <motion.div
-//           key={activeTab}
-//           initial={{ y: 10, opacity: 0 }}
-//           animate={{ y: 0, opacity: 1 }}
-//           exit={{ y: -10, opacity: 0 }}
-//           transition={{ duration: 0.2 }}
-//         >
-//           {activeTab === 'pasien' && (
-//             // Papan Kendali Pasien (mandiri)
-//             <ControlBoard />
-//           )}
-
-//           {activeTab === 'ringkasan' && (
-//             // 🔹 PERBAIKAN: Menggunakan grid 12 kolom untuk proporsi yang lebih baik
-//             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              
-//               {/* 🔹 Kolom Kiri: Tim Jaga (4 dari 12 kolom) */}
-//               <div className="lg:col-span-4">
-//                 {isLoadingTeams && (
-//                   <div className="flex justify-center items-center h-48">
-//                     <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-//                     <span className="ml-3 text-gray-500">Memuat tim jaga...</span>
-//                   </div>
-//                 )}
-//                 {teamError && (
-//                   <div className="flex justify-center items-center h-48 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-sm overflow-auto">
-//                     <AlertTriangle className="w-6 h-6 mr-3" />
-//                     <span className="font-medium">{teamError}</span>
-//                   </div>
-//                 )}
-//                 {shiftData && (
-//                   <TeamShiftCards 
-//                     shiftName={activeShift}
-//                     anesthesiaTeam={shiftData.anesthesiaTeam}
-//                     nurseTeams={shiftData.nurseTeams}
-//                     responsibleStaffByShift={shiftData.responsibleStaffByShift} 
-//                   />
-//                 )}
-//               </div>
-//               <div className="lg:col-span-8 space-y-4 w-full">
-//                 <RoomGrid filters={{ search: '', status: 'All' }} />
-//               </div>
-//             </div>
-//           )}
-//         </motion.div>
-//       </AnimatePresence>
-//     </div>
-//   );
-// }
-
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { ScheduledSurgery, StaffMember, OngoingSurgery } from "@/types";
 import {
   Card,
@@ -195,6 +21,7 @@ import {
   Trash2,
   GlassesIcon,
   HandshakeIcon,
+  Pencil,
 } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import {
@@ -208,6 +35,8 @@ import {
 import RoomGrid from "@/components/dashboard/RoomGrid";
 import StatusActionButton from "@/components/kendali/StatusActionButton";
 import { Button } from "@/components/ui/ui/button";
+import { Input } from "@/components/ui/ui/input"; // 💥 Impor Input
+import { Label } from "@/components/ui/ui/label"; // 💥 Impor Label
 import {
   AlertDialog,
   AlertDialogAction,
@@ -224,6 +53,20 @@ import ShareStatusButton from "@/components/share/share-button";
 
 type Shift = "Pagi" | "Siang" | "Malam";
 
+// Definisikan tipe Shift secara konstan
+const SHIFTS = ["Pagi", "Siang", "Malam"] as const;
+
+// Detail untuk ikon di UI (Anda sudah punya Sun, SunsetIcon, MoonStarIcon)
+const SHIFT_DETAILS = {
+  Pagi: { icon: Sun },
+  Siang: { icon: SunsetIcon },
+  Malam: { icon: MoonStarIcon },
+};
+
+type ResponsibleStaffByShift = {
+  [key in Shift]: StaffMember | null;
+};
+
 interface ShiftJaga {
   anesthesiaTeam: StaffMember[];
   nurseTeams: {
@@ -231,17 +74,206 @@ interface ShiftJaga {
     Siang: StaffMember[];
     Malam: StaffMember[];
   };
+  responsibleStaffByShift: ResponsibleStaffByShift; // 👈 GANTI DENGAN INI
 }
 
-// ✅ Gunakan formatter zona waktu Indonesia (WIB)
+// Tambahkan properti opsional agar kompatibel dengan OngoingSurgery
+interface LiveEntryPayload extends Omit<OngoingSurgery, "startTime" | "team"> {
+  patientName: string;
+  mrn: string;
+  anesthesiologistName: string;
+  actualStartTime: string;
+}
+
+// ------------------------------------------------------------------
+// Komponen Modal Edit Jadwal (Didefinisikan secara lokal)
+// ------------------------------------------------------------------
+
+interface ScheduleEditModalProps {
+  surgery: ScheduledSurgery;
+  onClose: () => void;
+  onSave: (updatedData: Partial<ScheduledSurgery>) => Promise<void>;
+  staffList: StaffMember[]; // Daftar staf untuk dropdown
+}
+
+const ScheduleEditModal: React.FC<ScheduleEditModalProps> = ({
+  surgery,
+  onClose,
+  onSave,
+  staffList,
+}) => {
+  const [formData, setFormData] = useState<Partial<ScheduledSurgery>>({
+    scheduledAt: surgery.scheduledAt,
+    assignedOR: surgery.assignedOR,
+    doctorName: surgery.doctorName,
+    procedure: surgery.procedure,
+    // Kita asumsikan ada assignedTeam di sini untuk mendapatkan ID anestesi
+    assignedTeam: surgery.assignedTeam,
+  });
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  const firstInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      firstInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      firstInputRef.current?.focus();
+    }, 250); // Delay 250ms biar animasi modal sempat tampil
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      const changes: Partial<ScheduledSurgery> = {};
+
+      if (formData.scheduledAt) {
+        changes.scheduledAt = new Date(formData.scheduledAt).toISOString();
+      }
+      if (formData.assignedOR) changes.assignedOR = formData.assignedOR;
+      if (formData.doctorName) changes.doctorName = formData.doctorName;
+      if (formData.procedure) changes.procedure = formData.procedure;
+      if (formData.assignedTeam) changes.assignedTeam = formData.assignedTeam;
+
+      await onSave(changes);
+      onClose();
+    } catch (error) {
+      toast.error("Gagal menyimpan perubahan.");
+      console.error("Save error:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormData((prev) => ({ ...prev, scheduledAt: e.target.value }));
+  // };
+
+  // const anesthesiologists = staffList.filter(
+  //   (s) => s.role === "Dokter Anestesi"
+  // );
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <Card className="w-full max-w-lg p-6 dark:bg-gray-800">
+      <h2 className="text-xl font-bold mb-4">
+        Edit Jadwal: {surgery.patientName}
+      </h2>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="procedure">Prosedur</Label>
+          <Input
+            id="procedure"
+            ref={firstInputRef} // 💥 Fokus otomatis ke sini
+            value={formData.procedure || ""}
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, procedure: e.target.value }))
+            }
+            required
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="scheduledAt">Waktu Terjadwal</Label>
+          <Input
+            id="scheduledAt"
+            type="datetime-local"
+            defaultValue={
+              formData.scheduledAt
+                ? new Date(formData.scheduledAt).toISOString().slice(0, 16)
+                : ""
+            }
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, scheduledAt: e.target.value }))
+            }
+            required
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="assignedOR">Kamar Operasi</Label>
+          <Input
+            id="assignedOR"
+            value={formData.assignedOR || ""}
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, assignedOR: e.target.value }))
+            }
+            placeholder="e.g., OK 1"
+            required
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="anesthesiologist">Dokter Anestesi</Label>
+          <select
+            id="anesthesiologist"
+            defaultValue={surgery.assignedTeam?.anesthesiologistId || ""}
+            onChange={(e) => {
+              const selectedId = e.target.value;
+              const selectedStaff = staffList.find(
+                (s) => s.id === selectedId
+              );
+              if (selectedStaff) {
+                setFormData((p) => ({
+                  ...p,
+                  assignedTeam: {
+                    nurseIds: p.assignedTeam?.nurseIds || [],
+                    anesthesiologistId: selectedId,
+                  },
+                }));
+              }
+            }}
+            className="w-full mt-1 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Pilih Dokter</option>
+            {staffList
+              .filter((s) => s.role === "Dokter Anestesi")
+              .map((staff) => (
+                <option key={staff.id} value={staff.id}>
+                  {staff.name}
+                </option>
+              ))}
+          </select>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-4">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Batal
+          </Button>
+          <Button type="submit" disabled={isSaving}>
+            {isSaving ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              "Simpan Perubahan"
+            )}
+          </Button>
+        </div>
+      </form>
+    </Card>
+  </div>
+  );
+};
+
+// ------------------------------------------------------------------
+// Fungsi Helper dan Komponen Utama
+// ------------------------------------------------------------------
+
 const formatTimeWIB = (time?: string | null) => {
   if (!time) return "-";
-  return new Date(time).toLocaleTimeString("id-ID", {
-    timeZone: "Asia/Jakarta",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  // Gunakan try-catch untuk memastikan timeZone valid
+  try {
+    return new Date(time).toLocaleTimeString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } catch {
+    return new Date(time).toLocaleTimeString("id-ID");
+  }
 };
 
 const getCurrentShift = (): Shift => {
@@ -260,7 +292,13 @@ export default function PapanKendaliPage() {
   const [deleting, setDeleting] = useState<{ id: string; name: string } | null>(
     null
   );
+  const [editingSurgery, setEditingSurgery] = useState<ScheduledSurgery | null>(
+    null
+  );
   const [loadingLive, setLoadingLive] = useState(true);
+
+  // 💥 1. TAMBAHKAN STATE UNTUK PENCARIAN
+  const [searchTerm, setSearchTerm] = useState("");
 
   const todayStr = new Date().toLocaleDateString("sv-SE", {
     timeZone: "Asia/Jakarta",
@@ -325,6 +363,35 @@ export default function PapanKendaliPage() {
     }
   }, [todayStr]);
 
+  // 💥 FUNGSI EDIT JADWAL (PATCH /api/schedule/[id])
+  const handleEdit = useCallback(
+    async (updatedData: Partial<ScheduledSurgery>) => {
+      if (!editingSurgery) return;
+
+      try {
+        const res = await fetch(`/api/schedule/${editingSurgery.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData),
+        });
+
+        if (!res.ok) throw new Error("Gagal memperbarui jadwal");
+
+        toast.success(
+          `✅ Jadwal ${editingSurgery.patientName} berhasil diubah.`
+        );
+        await loadAll();
+      } catch (err) {
+        console.error("❌ Edit gagal:", err);
+        toast.error("Gagal menyimpan perubahan jadwal");
+      } finally {
+        setEditingSurgery(null);
+      }
+    },
+    [editingSurgery, loadAll]
+  );
+
+  // 💥 FUNGSI UPDATE STATUS (Termasuk Handover)
   const updateSurgeryStatus = useCallback(
     async (surgery: ScheduledSurgery, nextStatus: string) => {
       setUpdatingId(surgery.id);
@@ -334,7 +401,13 @@ export default function PapanKendaliPage() {
             staff.find((s) => s.id === surgery.assignedTeam?.anesthesiologistId)
               ?.name || "Belum ditentukan";
 
-          const payload = {
+          // Payload untuk POST ke API Handover
+          const payload: {
+            surgery: ScheduledSurgery;
+            notes: string;
+            receivingTeam: StaffMember[];
+            liveEntry: LiveEntryPayload;
+          } = {
             surgery,
             notes: "Pasien diterima otomatis dari papan kendali.",
             receivingTeam: [],
@@ -344,12 +417,12 @@ export default function PapanKendaliPage() {
               doctorName: surgery.doctorName,
               patientName: surgery.patientName,
               mrn: surgery.mrn,
-              caseId: surgery.mrn,
+              caseId: surgery.mrn, // Menggunakan MRN sebagai Case ID
               anesthesiologistName,
               operatingRoom: surgery.assignedOR || "Belum ditentukan",
               status: "Persiapan Operasi",
-              actualStartTime: new Date().toISOString(),
-            },
+              actualStartTime: new Date().toISOString(), // Waktu masuk OK
+            } as LiveEntryPayload,
           };
 
           const res = await fetch("/api/handover", {
@@ -364,6 +437,7 @@ export default function PapanKendaliPage() {
           return;
         }
 
+        // Default PATCH untuk update status schedule
         const res = await fetch(`/api/schedule/${surgery.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -407,6 +481,7 @@ export default function PapanKendaliPage() {
 
   useEffect(() => {
     loadAll();
+    // 💥 REVISI: Mengurangi refresh data agar tidak terlalu sering (90 detik)
     const interval = setInterval(loadAll, 90000);
     return () => clearInterval(interval);
   }, [loadAll]);
@@ -426,8 +501,26 @@ export default function PapanKendaliPage() {
     return { currentSurgeries: current, nextInQueueByOR: queued };
   }, [liveOperations]);
 
+  // 💥 2. BUAT LOGIKA FILTER DENGAN useMemo
+  const filteredSchedule = useMemo(() => {
+    // Jika tidak ada pencarian, kembalikan semua jadwal
+    if (!searchTerm) return schedule;
+
+    const lowerCaseTerm = searchTerm.toLowerCase();
+
+    return schedule.filter(
+      (s) =>
+        s.patientName.toLowerCase().includes(lowerCaseTerm) ||
+        (s.procedure && s.procedure.toLowerCase().includes(lowerCaseTerm)) ||
+        s.doctorName.toLowerCase().includes(lowerCaseTerm) ||
+        (s.assignedOR && s.assignedOR.toLowerCase().includes(lowerCaseTerm))
+    );
+  }, [schedule, searchTerm]); // <-- Dependensi: schedule dan searchTerm
+
   const canUpdateStatus = (status: string) =>
     ["Terkonfirmasi", "Siap Panggil"].includes(status);
+
+  const currentShift = getCurrentShift();
 
   return (
     <div className="p-4 md:p-6 dark:bg-gray-900 min-h-screen">
@@ -439,22 +532,35 @@ export default function PapanKendaliPage() {
         </h1>
         <div className="flex items-center gap-4">
           <Badge className="p-1 pr-4 pl-4 border-0 outline-1 rounded bg-amber-500/50 text-sm">
-            <GlassesIcon size={28} className="mr-2 dark:text-amber-200 text-slate-700" />{" "}
+            <GlassesIcon
+              size={28}
+              className="mr-2 dark:text-amber-200 text-slate-700"
+            />{" "}
             {schedule.length} Pasien
           </Badge>
           {schedule.length > 0 && <PatientTrackerModal surgery={schedule[0]} />}
-          <Link href={"/operasi"} className="flex items-center p-1 pr-4 pl-4 border-0 outline-1 dark:outline-green-500/50 rounded bg-green-500/50 text-sm">  <HandshakeIcon size={18} className="mr-2 dark:text-amber-100 text-slate-700" />pasienku</Link>
-         
+          {/* 💥 LINK: Gunakan link yang benar */}
+          <Link
+            href={"/operasi"}
+            className="flex items-center p-1 pr-4 pl-4 text-nowrap border-0 outline-1 dark:outline-green-500/50 rounded bg-green-500/50 text-sm"
+          >
+            {" "}
+            <HandshakeIcon
+              size={18}
+              className="mr-2 dark:text-amber-100 text-slate-700"
+            />
+            Pasien OK
+          </Link>
         </div>
       </header>
 
-      {/* Grid Informasi */}
+      {/* Grid Informasi (Lebih Responsif) */}
       <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Operasi Berlangsung */}
+        {/* Operasi Berlangsung (Menggunakan Card yang responsif) */}
         <Card>
           <CardHeader className="flex items-center">
             <Activity size={18} className="mr-2 text-red-500" />
-            <CardTitle>Operasi Berlangsung</CardTitle>
+            <CardTitle className="text-red-500">Operasi Berlangsung</CardTitle>
           </CardHeader>
           <CardContent>
             {loadingLive ? (
@@ -470,7 +576,7 @@ export default function PapanKendaliPage() {
               <div
                 className={`grid gap-3 ${
                   currentSurgeries.length > 5
-                    ? "grid-cols-1 md:grid-cols-2 max-h-60 overflow-y-auto"
+                    ? "grid-cols-1 sm:grid-cols-2 max-h-60 overflow-y-auto" // Responsif pada sm
                     : "grid-cols-1"
                 }`}
               >
@@ -500,9 +606,11 @@ export default function PapanKendaliPage() {
         <Card>
           <CardHeader className="flex items-center">
             <SkipForward size={18} className="mr-2 text-green-500" />
-            <CardTitle>Antrian Berikutnya</CardTitle>
+            <CardTitle className="text-green-700 ">
+              Antrian Berikutnya
+            </CardTitle>
           </CardHeader>
-          <CardContent >
+          <CardContent>
             {loadingLive ? (
               <div className="flex items-center text-sm text-gray-500">
                 <Loader2 size={16} className="animate-spin mr-2" />
@@ -516,7 +624,7 @@ export default function PapanKendaliPage() {
               <div
                 className={`grid gap-2 ${
                   nextInQueueByOR.length > 5
-                    ? "grid-cols-1 md:grid-cols-2 max-h-60 overflow-y-auto"
+                    ? "grid-cols-1 sm:grid-cols-2 max-h-60 overflow-y-auto"
                     : "grid-cols-1"
                 }`}
               >
@@ -541,12 +649,14 @@ export default function PapanKendaliPage() {
           </CardContent>
         </Card>
 
-        {/* Tim Jaga */}
+        {/* Tim Jaga (Kolom 3) */}
         <Card>
           <CardHeader className="flex items-center justify-between">
             <div className="flex items-center">
               <Users size={18} className="mr-2 text-blue-500" />
-              <CardTitle>Tim Jaga Hari Ini</CardTitle>
+              <CardTitle className="text-gray-700 dark:text-gray-200 text-wrap">
+                Tim Jaga Hari Ini
+              </CardTitle>
             </div>
 
             {/* 🕒 Penanda Shift Aktif */}
@@ -572,7 +682,7 @@ export default function PapanKendaliPage() {
                   assignments.anesthesiaTeam.map((staff) => (
                     <li
                       key={staff.id}
-                      className="border-l-2 border-blue-400 bg-blue-600/30 dark:bg-blue-500/30 text-slate-700 dark:text-slate-100  p-1 pl-3 rounded"
+                      className="border-l-2 border-blue-400 bg-blue-600/30 dark:bg-blue-500/30 text-slate-700 dark:text-slate-100  p-1 pl-3 rounded text-wrap"
                     >
                       {staff.name}
                     </li>
@@ -583,7 +693,72 @@ export default function PapanKendaliPage() {
               </ul>
             </div>
 
-            {/* Perawat */}
+            {/* Penanggung Jawab OK (Per-Shift) */}
+            <div>
+              <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-200 mb-2">
+                Penanggung Jawab OK Harian
+              </h4>
+
+              <div className="space-y-3">
+                {/* Pastikan SHIFTS sudah didefinisikan di atas (Langkah 1) */}
+                {SHIFTS.map((shiftKey) => {
+                  // Cek apakah assignments ada DAN responsibleStaffByShift ada
+                  const pjStaff =
+                    assignments?.responsibleStaffByShift?.[shiftKey];
+
+                  // Pastikan SHIFT_DETAILS sudah didefinisikan (Langkah 1)
+                  const ShiftIcon = SHIFT_DETAILS[shiftKey].icon;
+                  const isCurrentShift = shiftKey === currentShift;
+
+                  return (
+                    <div
+                      key={shiftKey}
+                      className={`p-2 rounded-lg border transition-all 
+                      ${
+                        isCurrentShift
+                          ? "bg-yellow-100 dark:bg-yellow-800/70 border-yellow-500 shadow-md"
+                          : "bg-white dark:bg-slate-700 border-yellow-200 dark:border-yellow-600"
+                      }`}
+                    >
+                      <h4
+                        className={`font-bold text-xs mb-1 flex items-center 
+                      ${
+                        isCurrentShift
+                          ? "text-yellow-800 dark:text-yellow-200"
+                          : "text-slate-700 dark:text-slate-300"
+                      }`}
+                      >
+                        <ShiftIcon size={14} className="mr-2" />
+                        Shift {shiftKey}
+                        {isCurrentShift && (
+                          <Badge className="ml-2 px-2 py-0.5 rounded-full bg-yellow-600 h-6 w-6  animate-bounce"/>
+                          
+                        )}
+                      </h4>
+
+                      {pjStaff ? (
+                        <div className="flex items-center text-xs text-yellow-700 dark:text-yellow-300 pl-4">
+                          {/* Ganti ikon User jika belum diimpor, atau impor 'User' dari lucide-react */}
+                          <Users
+                            size={12}
+                            className="mr-2 flex-shrink-0 text-yellow-600 dark:text-yellow-300"
+                          />
+                          <span className="font-medium text-xs text-slate-800 dark:text-slate-200">
+                            {pjStaff.name}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-500 italic pl-4">
+                          Belum ditetapkan.
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Perawat (Responsif: stack di mobile, flex di md) */}
             <div>
               <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-200 mb-1">
                 Perawat Berdasarkan Shift
@@ -610,10 +785,12 @@ export default function PapanKendaliPage() {
                     );
 
                   return (
-                    <div key={shift} className="flex-1">
+                    <div key={shift} className="flex-1 min-w-[30%]">
+                      {" "}
+                      {/* 💥 Responsive flex-1 */}
                       <div className="flex items-center justify-between mb-1">
                         <h5
-                          className={`font-semibold text-xs ${
+                          className={`font-semibold text-xs text-wrap ${
                             isActive
                               ? "text-blue-600 dark:text-blue-400"
                               : "text-gray-600 dark:text-gray-300"
@@ -630,10 +807,9 @@ export default function PapanKendaliPage() {
                           </Badge>
                         )}
                       </div>
-
                       {nurses.length ? (
                         <ul
-                          className={`text-xs text-gray-600 dark:text-gray-200 space-y-1 ${
+                          className={`text-xs text-wrap text-gray-600 dark:text-gray-200 space-y-1 ${
                             nurses.length > 5
                               ? "max-h-32 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600"
                               : ""
@@ -653,7 +829,9 @@ export default function PapanKendaliPage() {
                           ))}
                         </ul>
                       ) : (
-                        <p className="italic text-gray-400 text-xs">Kosong</p>
+                        <p className="italic text-gray-400 text-xs text-wrap">
+                          Kosong
+                        </p>
                       )}
                     </div>
                   );
@@ -670,69 +848,109 @@ export default function PapanKendaliPage() {
           <CardHeader>
             <CardTitle>Jadwal & Kendali Pasien</CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow overflow-auto scrollbar-thin">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Pasien</TableHead>
-                  <TableHead>Waktu</TableHead>
-                  <TableHead>Ruang</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {schedule.length ? (
-                  schedule.map((s) => (
-                    <TableRow key={s.id}>
-                      <TableCell>
-                        <b>{s.patientName}</b>
-                        <div className="text-xs text-gray-500">
-                          {s.procedure}
-                        </div>
-                      </TableCell>
-                      <TableCell>{formatTimeWIB(s.scheduledAt)}</TableCell>
-                      <TableCell>{s.assignedOR || "Belum diatur"}</TableCell>
-                      <TableCell className="flex gap-2">
-                        {canUpdateStatus(s.status) ? (
-                          <StatusActionButton
-                            surgery={s}
-                            onUpdateStatus={updateSurgeryStatus}
-                            isUpdating={updatingId === s.id}
-                          />
-                        ) : (
-                          <Badge className="bg-gray-200/10 rounded p-1 border-l-4 border-yellow-600 animate-pulse">
-                            {s.status}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell >
-                        <div className="flex items-center gap-2">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => confirmDelete(s)}
-                        >
-                          <Trash2 size={14} className="text-red-400 dark:text-slate-100"/>
-                        </Button>
-                        <ShareStatusButton mrn={s.mrn} />
-                        </div>
-                       
+
+          {/* 💥 3. TAMBAHKAN INPUT SEARCH DI SINI */}
+          <div className="px-6 pt-2">
+            <Input
+              placeholder="Cari pasien, prosedur, dokter, atau OK..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="dark:bg-gray-800"
+            />
+          </div>
+
+          <CardContent className="flex-grow overflow-auto scrollbar-thin pt-4">
+            {" "}
+            {/* Tambah pt-4 */}
+            {/* 💥 TABLE RESPONSIVENESS: Tambahkan div untuk overflow di mobile */}
+            <div className="w-full overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[150px]">
+                      Pasien & Prosedur
+                    </TableHead>
+                    <TableHead className="min-w-[80px]">Waktu</TableHead>
+                    <TableHead className="min-w-[100px]">Ruang</TableHead>
+                    <TableHead className="min-w-[150px]">Status</TableHead>
+                    <TableHead className="min-w-[120px]">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {/* 💥 4. GUNAKAN filteredSchedule DI SINI */}
+                  {filteredSchedule.length ? (
+                    filteredSchedule.map((s) => (
+                      <TableRow key={s.id}>
+                        <TableCell>
+                          <b className="font-medium text-sm text-slate-700 dark:text-slate-100">
+                            {s.patientName}
+                          </b>
+                          <div className="text-xs text-gray-500">
+                            {s.procedure || "N/A"}{" "}
+                            {/* Pastikan procedure tidak null */}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-semibold text-stone-700 dark:text-slate-100">
+                          {formatTimeWIB(s.scheduledAt)}
+                        </TableCell>
+                        <TableCell className="font-semibold text-stone-700 dark:text-slate-100">
+                          {s.assignedOR || "Belum diatur"}
+                        </TableCell>
+                        <TableCell className="flex gap-2">
+                          {canUpdateStatus(s.status) ? (
+                            <StatusActionButton
+                              surgery={s}
+                              onUpdateStatus={updateSurgeryStatus}
+                              isUpdating={updatingId === s.id}
+                            />
+                          ) : (
+                            <Badge className="bg-gray-200/10 text-gray-600 dark:text-gray-400 rounded p-1 border-l-4 border-yellow-600 animate-pulse">
+                              {s.status}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {/* 💥 TOMBOL EDIT */}
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => setEditingSurgery(s)}
+                            >
+                              <Pencil size={14} className="text-blue-500" />
+                            </Button>
+
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => confirmDelete(s)}
+                            >
+                              <Trash2
+                                size={14}
+                                className="text-red-400  dark:text-slate-100"
+                              />
+                            </Button>
+                            <ShareStatusButton mrn={s.mrn} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5} // Diubah dari 4 menjadi 5
+                        className="text-center italic text-gray-400"
+                      >
+                        {/* 💥 5. BUAT PESAN DINAMIS */}
+                        {searchTerm
+                          ? "Tidak ada jadwal yang cocok."
+                          : "Tidak ada jadwal hari ini."}
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      className="text-center italic text-gray-400"
-                    >
-                      Tidak ada jadwal hari ini.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 
@@ -767,6 +985,16 @@ export default function PapanKendaliPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* 💥 MODAL EDIT JADWAL */}
+      {editingSurgery && (
+        <ScheduleEditModal
+          surgery={editingSurgery}
+          onClose={() => setEditingSurgery(null)}
+          onSave={handleEdit}
+          staffList={staff}
+        />
+      )}
     </div>
   );
 }

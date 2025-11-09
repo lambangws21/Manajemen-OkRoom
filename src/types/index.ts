@@ -18,6 +18,44 @@ export interface OperatingRoomShiftPopulated
   nurses: StaffMember[];
 }
 
+// --- 1. Definisi Role/Status (untuk konsistensi) ---
+export type StaffRole = 
+  | 'Dokter Anestesi' 
+  | 'Perawat Bedah' 
+  | 'Perawat Anestesi';
+
+  
+// --- 2. Interface Staff Member ---
+
+export interface Staff {
+  id: string;
+  name: string;
+  role: string;
+  department?: string;
+  status?: "Aktif" | "Cuti" | "Sakit" | "Izin";
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// --- Tambahan untuk Komponen Visual Grid / Card ---
+export interface ProcessedRoom extends OperatingRoom {
+  name: string;
+  description?: string;
+  team?: StaffMember[];
+}
+
+export interface LeaveRequest {
+  id: string;
+  staffName: string;
+  type: "Cuti" | "Sakit" | "Izin";
+  startDate: string;
+  endDate: string;
+  reason: string;
+  status: "Menunggu" | "Disetujui" | "Ditolak";
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Room {
   id: string;
   number: string;
@@ -59,6 +97,16 @@ export interface ShiftAssignment {
   shift: string;
   anesthesiologistId: string;
   nurseIds: string[];
+}
+
+export interface ShiftSchedule {
+  id: string;
+  staffName: string;
+  date: string;
+  shift: "Pagi" | "Siang" | "Malam";
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 
@@ -199,40 +247,6 @@ export interface PatientStatusData {
   stages: PatientStage[];
   currentStage: string;
 }
-
-
-
-// src/types/index.ts
-
-// --- 1. Definisi Role/Status (untuk konsistensi) ---
-export type StaffRole = 
-  | 'Dokter Anestesi' 
-  | 'Perawat Bedah' 
-  | 'Perawat Anestesi';
-
-// --- 2. Interface Staff Member ---
-
-export interface Staff {
-  /** Firestore Document ID (Wajib untuk CRUD) */
-  id: string; 
-  name: string;
-  /** Role staf, sesuai enum yang ditentukan */
-  role: StaffRole; 
-  /** Department, Opsional di database */
-  department?: string; 
-  /** Waktu pembuatan record (opsional, dikelola oleh Firestore) */
-  createdAt?: string; 
-  /** Waktu update terakhir (opsional, dikelola oleh Firestore) */
-  updatedAt?: string; 
-}
-
-// --- Tambahan untuk Komponen Visual Grid / Card ---
-export interface ProcessedRoom extends OperatingRoom {
-  name: string;
-  description?: string;
-  team?: StaffMember[];
-}
-
 
 // --- 3. Interface untuk data yang dikirim dari Form (tanpa ID/metadata) ---
 // Berguna untuk memastikan data yang dikirim ke POST/PUT tidak memiliki ID

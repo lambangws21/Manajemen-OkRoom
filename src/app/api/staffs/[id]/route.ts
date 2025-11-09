@@ -150,12 +150,13 @@ export async function PUT(
         { status: 400 }
       );
     }
-    if (!VALID_ROLES.includes(role)) {
+    if (!VALID_ROLES.includes(role as StaffRole)) {
       return NextResponse.json(
         { error: `Role tidak valid. Pilih dari: ${VALID_ROLES.join(", ")}` },
         { status: 400 }
       );
     }
+    
 
     const docRef = adminDb.collection(STAFF_COLLECTION).doc(id);
     const docSnap = await docRef.get();

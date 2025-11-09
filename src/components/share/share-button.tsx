@@ -61,7 +61,7 @@ export default function ShareStatusButton({ mrn }: ShareStatusButtonProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button  size="sm" className="flex items-center gap-2">
-          <Share2 size={16} /> 
+          <Share2 size={16} className='text-green-500 text-shadow-2xs'/> 
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md text-center">
@@ -72,7 +72,7 @@ export default function ShareStatusButton({ mrn }: ShareStatusButtonProps) {
         </DialogHeader>
 
         <div className="py-4 flex flex-col items-center gap-4">
-        <QRCodeCanvas value={shareUrl} size={140} />
+        <QRCodeCanvas value={shareUrl} size={140}  />
 
 
           <p className="text-sm text-gray-600 break-all">{shareUrl}</p>
