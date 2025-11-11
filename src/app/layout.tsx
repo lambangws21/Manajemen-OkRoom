@@ -3,40 +3,37 @@
 import './globals.css';
 import Sidebar from '@/components/layout/Sidebar';
 import Navbar from '@/components/layout/Navbar';
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from '@/components/AuthProvider';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
 
-  // ✅ Responsif Sidebar
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // ✅ Sidebar responsive behaviour
   useEffect(() => {
     const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-      if (window.innerWidth >= 1024) {
-        setSidebarOpen(true); // default open di desktop
-      } else {
-        setSidebarOpen(false); // hide di mobile
-      }
+      setSidebarOpen(window.innerWidth >= 1024);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 🔒 Auth Redirect
+  // 🔐 Auth redirect
   useEffect(() => {
     const publicRoutes = ['/login', '/share/status'];
     const isPublic = publicRoutes.some((path) => pathname.startsWith(path));
+
     if (!loading && !user && !isPublic) router.push('/login');
   }, [user, loading, pathname, router]);
 
@@ -44,9 +41,12 @@ function AppLayout({ children }: { children: ReactNode }) {
   if (!user) return <>{children}</>;
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const toggleCollapse = () => setIsCollapsed((prev) => !prev);
 
   const noLayoutPages = ['/live-view/operasi', '/login'];
-  const useMainLayout = !noLayoutPages.some((path) => pathname.startsWith(path));
+  const useMainLayout = !noLayoutPages.some((path) =>
+    pathname.startsWith(path)
+  );
 
   const getPageTitle = (path: string): string => {
     if (path.startsWith('/dashboard')) return 'Dashboard Operasional';
@@ -62,42 +62,47 @@ function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div
       className={cn(
-        'relative flex h-screen w-full overflow-hidden',
+        'flex h-screen w-full relative overflow-hidden',
         'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100'
       )}
     >
-      {/* 🌙 Overlay untuk mobile */}
-      <AnimatePresence>
-        {!isDesktop && isSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30"
-            onClick={toggleSidebar}
-          />
-        )}
-      </AnimatePresence>
+      {/* 🧭 Sidebar */}
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        isCollapsed={isCollapsed}
+        toggleCollapse={toggleCollapse}
+      />
 
-      {/* 🧱 Sidebar sebagai overlay */}
-      <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      {/* 🧱 Main Content Area */}
+      <motion.main
+        animate={{
+          marginLeft:
+            isSidebarOpen && !isCollapsed
+              ? 288 // sidebar penuh
+              : isSidebarOpen && isCollapsed
+              ? 80 // sidebar mini
+              : 0, // sidebar tertutup (mobile)
+        }}
+        transition={{ duration: 0.25, ease: 'easeInOut' }}
+        className="flex flex-col flex-1 transition-all duration-300 bg-slate-100/60 dark:bg-slate-800/50 backdrop-blur-sm"
+      >
+        {/* Navbar di atas */}
+        <Navbar
+          pageTitle={getPageTitle(pathname)}
+          toggleSidebar={toggleSidebar}
+        />
 
-      {/* 🧭 Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden relative z-10">
-        <Navbar pageTitle={getPageTitle(pathname)} toggleSidebar={toggleSidebar} />
-
-        <motion.div
-          layout
-          className="flex-1 overflow-y-auto p-5 md:p-8 bg-slate-100/70 dark:bg-slate-800/40 backdrop-blur-md rounded-t-lg shadow-inner transition-all"
-        >
+        {/* Konten bisa scroll */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 rounded-t-lg shadow-inner">
           {children}
-        </motion.div>
+        </div>
 
-        <footer className="text-center text-xs text-slate-500 py-4 border-t bg-slate-100/60 dark:bg-slate-800/40 dark:text-slate-400 border-slate-200/30 dark:border-slate-700/60 backdrop-blur-lg">
+        {/* Footer */}
+        <footer className="text-center text-xs text-slate-500 py-4 border-t bg-slate-100 dark:bg-slate-800/40 dark:text-slate-400 border-slate-200 dark:border-slate-700/60 backdrop-blur-lg">
           © {new Date().getFullYear()} MedOps ORM — Powered by Lambang
         </footer>
-      </div>
+      </motion.main>
     </div>
   );
 }
